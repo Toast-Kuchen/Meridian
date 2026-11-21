@@ -128,7 +128,7 @@ addEventListener('resize',()=>{resize();clamp()});
 function dp(cx,cy,k){const z=cam.z;g.beginPath();g.moveTo(cx,cy-16*z*k);g.lineTo(cx+32*z*k,cy);g.lineTo(cx,cy+16*z*k);g.lineTo(cx-32*z*k,cy);g.closePath()}
 const dia=(cx,cy,k,c)=>{dp(cx,cy,k);g.fillStyle=c;g.fill()},poly=(a,c)=>{g.beginPath();a.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath();g.fillStyle=c;g.fill()};
 function tree(cx,cy,s){const z=cam.z*s;g.fillStyle='#5a3d22';g.fillRect(cx-1.5*z,cy-8*z,3*z,9*z);g.fillStyle='#3d6a33';g.beginPath();g.arc(cx,cy-14*z,8*z,0,7);g.fill();g.fillStyle='#5a8c42';g.beginPath();g.arc(cx-2*z,cy-16*z,4.5*z,0,7);g.fill()}
-function ts(i,x,y,sc){const c=SPR['tree'+(i%3)],z=cam.z*sc;if(c)g.drawImage(c,x-20*z,y-50*z,40*z,56*z);else tree(x,y,sc)}
+function treeSpr(i,x,y,sc){const c=SPR['tree'+(i%3)],z=cam.z*sc;if(c)g.drawImage(c,x-20*z,y-50*z,40*z,56*z);else tree(x,y,sc)}
 function spr(c,cx,cy,a){const z=cam.z;g.globalAlpha=a;g.drawImage(c,cx-40*z,cy-84*z,80*z,110*z);g.globalAlpha=1}
 function gd(x,y,m,h,cx,cy){if(m||h>.4||at(x,y))return;const c=SPR[h<.1?'flower':'tuft'],z=cam.z;if(c)g.drawImage(c,cx+(h*50-12)*z,cy+(h*30-6)*z,16*z,10*z)}
 function wat(t){const z=cam.z,E=[[1,0,32,0,0,16],[0,1,0,16,-32,0],[-1,0,-32,0,0,-16],[0,-1,0,-16,32,0]];g.lineCap='round';
@@ -153,7 +153,7 @@ function draw(ts){const z=cam.z,t=ts/1000,dt=Math.min(.1,(ts-last)/1000);last=ts
  for(const w of WK){const d=Math.hypot(w.tx-w.x,w.ty-w.y);if(d<.1&&tg.length){const b=tg[Math.random()*tg.length|0];w.tx=b.x+(Math.random()-.5)*.6;w.ty=b.y+.6}else if(d>=.1){w.x+=(w.tx-w.x)/d*.8*dt;w.y+=(w.ty-w.y)/d*.8*dt}}
  const ws=WK.slice().sort((a,b)=>a.x+a.y-b.x-b.y);let wi=0;
  for(let s=0;s<2*N;s++){for(let x=Math.max(0,s-N+1);x<=Math.min(s,N-1);x++){const y=s-x,[cx,cy]=P(x,y);if(!vis(cx,cy))continue;const m=S.map[y*N+x],b=at(x,y),h=hs(x,y);
-   g.globalAlpha=S.zones[zoneOf(x,y)]?1:.5;if(m==1){ts(h*3|0,cx-10*z,cy+1*z,.95+h*.2);ts(h*7|0,cx+9*z,cy+5*z,.85+h*.25);if(h>.5)ts(h*11|0,cx+1*z,cy-6*z,.8)}else if(m==3){const c=SPR.rock;if(c)g.drawImage(c,cx-40*z,cy-44*z,80*z,60*z)}
+   g.globalAlpha=S.zones[zoneOf(x,y)]?1:.5;if(m==1){treeSpr(h*3|0,cx-10*z,cy+1*z,.95+h*.2);treeSpr(h*7|0,cx+9*z,cy+5*z,.85+h*.25);if(h>.5)treeSpr(h*11|0,cx+1*z,cy-6*z,.8)}else if(m==3){const c=SPR.rock;if(c)g.drawImage(c,cx-40*z,cy-44*z,80*z,60*z)}
    g.globalAlpha=1;if(b)drawB(b,cx,cy)}
   while(wi<ws.length&&ws[wi].x+ws[wi].y<s+1){const w=ws[wi++],[px,py]=P(w.x,w.y);{const c=SPR['v'+(wi%4)];if(c)g.drawImage(c,px-5*z,py-19*z-Math.abs(Math.sin(t*8+wi))*1.5*z,10*z,20*z)}}}
  if(mode&&ghost){const[cx,cy]=P(ghost[0],ghost[1]),ok=!why(mode,ghost[0],ghost[1]);dia(cx,cy,1,ok?'rgba(80,220,90,.5)':'rgba(230,60,50,.55)');SPR[mode]?spr(SPR[mode],cx,cy,.65):box(cx,cy,B[mode],.65)}
