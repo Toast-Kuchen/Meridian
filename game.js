@@ -3,20 +3,21 @@ const N=24,$=i=>document.getElementById(i),R=['food','wood','stone','tools','coi
 RI={food:'🌾',wood:'🪵',stone:'🪨',tools:'🔧',coins:'🪙'},RN={food:'Nahrung',wood:'Holz',stone:'Stein',tools:'Werkzeuge',coins:'Münzen'},ST=['','Dorf','Marktflecken','Stadt'];
 const B={
 road:{n:'Weg',i:'🛤️',c:{coins:1,stone:1},st:1,t:0,flat:1,sat:.3,d:'Befestigter Weg, macht den Ort ansehnlicher.'},
-well:{n:'Brunnen',i:'⛲',c:{stone:8,coins:5},st:1,t:1,h:10,rh:10,s:.5,w:'#9a9a9a',r:'#7a5a35',sat:8,rad:4,d:'Versorgt Wohnhäuser im Umkreis von 4 Feldern.'},
+well:{n:'Brunnen',i:'⛲',c:{stone:8,coins:5},st:1,t:1,h:10,rh:10,s:.5,w:'#9a9a9a',r:'#7a5a35',sat:8,rad:3,d:'Versorgt Wohnhäuser im Umkreis von 3 Feldern.'},
 house:{n:'Wohnhaus',i:'🏠',c:{wood:10,coins:5},st:1,t:1,h:20,w:'#dcc9a2',r:'#b04a32',home:4,d:'Fachwerkhaus für 4 Bewohner.'},
 farm:{n:'Bauernhof',i:'🌾',c:{wood:15,coins:10},st:1,t:1,h:16,rh:10,w:'#c9a66b',r:'#7a5a35',job:3,prod:{food:8},d:'Baut Getreide an und ernährt die Siedlung.'},
+fish:{n:'Fischerboot',i:'🎣',c:{wood:15,tools:1,coins:10},st:1,t:1,h:8,rh:6,s:.5,w:'#8a6a3a',r:'#e8dcc0',job:2,prod:{food:5},fish:1,water:1,d:'Fischt auf dem Wasser, nur am Ufer. Boote dicht beieinander fangen weniger.'},
 wood:{n:'Holzfäller',i:'🪓',c:{wood:8,coins:5},st:1,t:1,h:14,rh:10,w:'#9c7a4a',r:'#5b4025',job:2,prod:{wood:6},need:1,d:'Fällt Bäume. Braucht Wald in 2 Feldern Umkreis.'},
 quarry:{n:'Steinbruch',i:'⛏️',c:{wood:10,tools:2,coins:10},st:1,t:1,h:12,rh:6,w:'#a9a597',r:'#6d6a60',job:3,prod:{stone:4},need:3,d:'Bricht Stein. Braucht Hügel in 2 Feldern Umkreis.'},
-smith:{n:'Schmiede',i:'🔨',c:{wood:15,stone:10,coins:20},st:2,t:1,h:20,rh:12,w:'#8d8b88',r:'#4a4a52',job:2,use:{wood:2,stone:1},prod:{tools:2},d:'Macht aus Holz und Stein Werkzeuge.'},
-bakery:{n:'Bäckerei',i:'🥖',c:{wood:15,stone:10,coins:20},st:2,t:1,h:20,rh:14,w:'#e3d2ae',r:'#9a4a2c',job:2,use:{food:3},prod:{food:5},d:'Backt Brot: aus 3 Nahrung werden 5.'},
-mill:{n:'Mühle',i:'🌬️',c:{wood:20,stone:10,coins:25},st:2,t:1,h:26,rh:14,w:'#e6dcc4',r:'#7a5a35',job:2,use:{food:4},prod:{food:7},d:'Mahlt Getreide: aus 4 Nahrung werden 7.'},
+smith:{n:'Schmiede',i:'🔨',c:{wood:15,stone:10,coins:20},st:2,t:2,h:20,rh:12,w:'#8d8b88',r:'#4a4a52',job:2,use:{wood:2,stone:1},prod:{tools:2},d:'Macht aus Holz und Stein Werkzeuge.'},
+bakery:{n:'Bäckerei',i:'🥖',c:{wood:15,stone:10,coins:20},st:2,t:2,h:20,rh:14,w:'#e3d2ae',r:'#9a4a2c',job:2,use:{food:3},prod:{food:5},d:'Backt Brot: aus 3 Nahrung werden 5.'},
+mill:{n:'Mühle',i:'🌬️',c:{wood:20,stone:10,coins:25},st:2,t:2,h:26,rh:14,w:'#e6dcc4',r:'#7a5a35',job:2,use:{food:4},prod:{food:7},d:'Mahlt Getreide: aus 4 Nahrung werden 7.'},
 tower:{n:'Wachturm',i:'🗼',c:{wood:15,stone:20,coins:15},st:1,t:1,h:44,rh:14,s:.6,w:'#b8b2a2',r:'#7a3b2a',job:1,def:4,d:'Wachposten warnen und verteidigen die Stadt.'},
-guard:{n:'Wachhaus',i:'🛡️',c:{wood:15,stone:15,tools:4,coins:25},st:2,t:1,h:22,rh:14,w:'#a9a597',r:'#4a5a8a',job:3,def:6,gd:6,d:'Wachen verteidigen die Stadt und bilden Expeditionen.'},
+guard:{n:'Wachhaus',i:'🛡️',c:{wood:15,stone:15,tools:4,coins:25},st:2,t:2,h:22,rh:14,w:'#a9a597',r:'#4a5a8a',job:3,def:6,gd:6,d:'Wachen verteidigen die Stadt und bilden Expeditionen.'},
 wall:{n:'Stadtmauer',i:'🧱',c:{stone:6,coins:2},st:1,t:1,h:12,rh:3,s:.9,w:'#b5b0a0',r:'#8a8578',def:1,wall:1,d:'Je +1 Verteidigung (Mauern zusammen max. +8).'},
-market:{n:'Marktplatz',i:'🧺',c:{wood:20,stone:10,coins:30},st:2,t:1,h:12,rh:16,w:'#d8b46a',r:'#b8382a',job:2,prod:{coins:5},sat:20,rad:5,d:'Bringt Münzen; Häuser im Umkreis von 5 Feldern sind zufriedener.'},
-store:{n:'Lagerhaus',i:'📦',c:{wood:25,stone:15},st:2,t:1,h:24,rh:12,w:'#b79566',r:'#6b4a2a',cap:100,d:'Erhöht das Lager aller Rohstoffe um 100.'},
-burgher:{n:'Bürgerhaus',i:'🏛️',c:{wood:20,stone:15,coins:20},st:3,t:2,h:32,rh:16,w:'#d3c3a3',r:'#8a3b2a',home:8,d:'Stattliches Haus für 8 Bewohner.'}
+market:{n:'Marktplatz',i:'🧺',c:{wood:20,stone:10,coins:30},st:1,t:1,h:12,rh:16,w:'#d8b46a',r:'#b8382a',job:2,prod:{coins:5},sat:20,rad:4,d:'Bringt Münzen und erlaubt Handel; Häuser im Umkreis von 4 Feldern sind zufriedener.'},
+store:{n:'Lagerhaus',i:'📦',c:{wood:25,stone:15},st:2,t:2,h:24,rh:12,w:'#b79566',r:'#6b4a2a',cap:100,d:'Erhöht das Lager aller Rohstoffe um 100.'},
+burgher:{n:'Bürgerhaus',i:'🏛️',c:{wood:20,stone:15,coins:20},st:3,t:3,h:32,rh:16,w:'#d3c3a3',r:'#8a3b2a',home:8,d:'Stattliches Haus für 8 Bewohner.'}
 };
 const hs=(x,y)=>((x*73856093^y*19349663)>>>0)%100/100,cl=(v,a,b)=>Math.max(a,Math.min(b,v)),cost=c=>Object.keys(c).map(k=>RI[k]+c[k]).join(' '),
 rnd=a=>()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
@@ -26,13 +27,13 @@ function genMap(){const r=rnd((Math.random()*1e9)|0),p=Array.from({length:8},()=
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){let t=0;if(n(x,y,0)>1.2)t=1;else if(n(x,y,4)>2.1)t=3;
   if(Math.abs(x-(17+3*Math.sin(y*.35+p[0])))<1.3||Math.hypot(x-4,y-19)<1.6)t=2;if(Math.hypot(x-10,y-10)<3.6)t=0;m.push(t)}
  [[14,12],[14,13],[13,14],[14,14],[15,13],[15,12]].forEach(([x,y])=>m[y*N+x]=1);[[14,8],[15,8],[14,9],[15,9],[15,10]].forEach(([x,y])=>m[y*N+x]=3);return m}
-function newGame(){S={turn:1,stage:1,pop:6,sat:60,won:0,camp:{x:1,y:1},peace:0,nr:12,raid:null,zones:[0,0,0,0,1,0,0,0,0],res:{food:20,wood:30,stone:6,tools:3,coins:40},map:genMap(),log:['Willkommen in Meridian!'],
+function newGame(){S={turn:1,stage:1,pop:6,sat:60,won:0,exp:[0,0,0,0,1,0,0,0,0],scout:null,camp:{x:1,y:1},peace:0,nr:12,raid:null,zones:[0,0,0,0,1,0,0,0,0],res:{food:20,wood:30,stone:6,tools:3,coins:40},map:genMap(),log:['Willkommen in Meridian!'],
  bld:[['house',9,9],['house',11,9],['farm',10,11]].map(([id,x,y])=>({id,x,y,t:0}))};S.rs={};S.map.forEach((m,i)=>{if(m==1)S.rs[i]=40;if(m==3)S.rs[i]=60});idx();WK=[];mode=ghost=sel=zsel=null;centerOn(10,10)}
 // ---- Wirtschaft ----
 function stats(s){let home=0,jobs=0,cap=100,sb=0;const H=[];for(const b of s.bld){if(b.t>0||b.dmg)continue;const d=B[b.id];home+=d.home||0;jobs+=d.job||0;cap+=d.cap||0;if(d.home)H.push(b)}
  for(const b of s.bld){const d=B[b.id];if(b.t>0||b.dmg||!d.sat)continue;if(!d.rad){sb+=d.sat;continue}let c=0;for(const h of H)if(Math.abs(h.x-b.x)+Math.abs(h.y-b.y)<=d.rad)c+=B[h.id].home;sb+=home?d.sat*c/home:0}
  return{home,jobs,cap,sb:Math.min(sb,35)}}
-function tilesNear(s,x,y,m){const o=[];for(let j=-2;j<=2;j++)for(let i=-2;i<=2;i++){const a=x+i,c=y+j;if(a>=0&&c>=0&&a<N&&c<N&&s.map[c*N+a]==m&&s.rs[c*N+a]>0)o.push(c*N+a)}return o}
+function tilesNear(s,x,y,m){const o=[];for(let j=-2;j<=2;j++)for(let i=-2;i<=2;i++){const a=x+i,c=y+j;if(Math.abs(i)+Math.abs(j)<=2&&a>=0&&c>=0&&a<N&&c<N&&s.map[c*N+a]==m&&s.rs[c*N+a]>0)o.push(c*N+a)}return o}
 function harvest(s,b,m,a,L,n){let got=0;for(const i of tilesNear(s,b.x,b.y,m)){const t=Math.min(a-got,s.rs[i]);s.rs[i]-=t;got+=t;if(s.rs[i]<=0){s.map[i]=0;delete s.rs[i]}if(got>=a)break}if(got<a)L.push(n+': Vorkommen in Reichweite erschöpft.');return got}
 const EV=[s=>{s.res.food+=10;return'Gute Ernte: +10 Nahrung.'},
  s=>s.res.coins>=10?(s.res.coins-=10,s.res.wood+=15,'Ein Händler verkauft günstig Holz: +15 Holz für 10 Münzen.'):'Ein Händler zieht durch, doch das Geld fehlt.',
@@ -40,14 +41,14 @@ const EV=[s=>{s.res.food+=10;return'Gute Ernte: +10 Nahrung.'},
  s=>s.pop<stats(s).home?(s.pop++,'Eine Familie zieht zu.'):'Reisende suchen Quartier, aber es fehlt Wohnraum.'];
 function step(s,q){const k=stats(s),L=[],r=s.res,emp=Math.min(s.pop,k.jobs),eff=k.jobs?emp/k.jobs:0,
  pr=s.bld.filter(b=>!b.t&&!b.dmg&&B[b.id].prod).sort((a,b)=>!!B[a.id].use-!!B[b.id].use);
- for(const b of pr){const d=B[b.id];if(d.use){if(!Object.keys(d.use).every(x=>r[x]>=d.use[x])){L.push(d.n+': Rohstoffmangel, Produktion ruht.');continue}for(const x in d.use)r[x]-=d.use[x]}for(const x in d.prod){let a=d.prod[x]*eff;if(d.need)a=harvest(s,b,d.need,a,L,d.n);r[x]+=a}}
+ for(const b of pr){const d=B[b.id];if(d.use){if(!Object.keys(d.use).every(x=>r[x]>=d.use[x])){L.push(d.n+': Rohstoffmangel, Produktion ruht.');continue}for(const x in d.use)r[x]-=d.use[x]}for(const x in d.prod){let a=d.prod[x]*eff;if(d.need)a=harvest(s,b,d.need,a,L,d.n);if(d.fish)a/=1+.4*s.bld.filter(o=>o!==b&&o.id=='fish'&&Math.abs(o.x-b.x)+Math.abs(o.y-b.y)<=3).length;r[x]+=a}}
  const need=s.pop*.6,hunger=r.food<need;r.food=Math.max(0,r.food-need);if(hunger)L.push('Hunger! Die Vorräte reichen nicht.');
  r.coins=Math.max(0,r.coins+s.pop*.25+emp-s.bld.filter(b=>!b.t&&B[b.id].job).length-s.bld.filter(b=>!b.t&&B[b.id].home).length*.5);
  const un=s.pop?(s.pop-emp)/s.pop:0,tg=40+k.sb+(hunger?-30:15)+(un>.4?-10:un<.15?5:0)+(s.pop>k.home?-10:0);s.sat=cl(s.sat+(tg-s.sat)*.5,0,100);
  const free=k.home-s.pop;if(hunger||s.sat<25)s.pop=Math.max(2,s.pop-1);else if(free>0&&s.sat>=45){s.pop+=Math.min(free,Math.ceil(s.pop*.2));L.push('Die Bevölkerung wächst.')}else if(free<0)s.pop=k.home;
  s.bld.forEach(b=>{if(b.t>0&&--b.t==0)L.push(B[b.id].n+' fertiggestellt.')});
  const ns=s.pop>=60?3:s.pop>=25?2:1;if(ns>s.stage){s.stage=ns;L.push('Aufstieg: '+ST[ns]+'! Neue Gebäude verfügbar.')}
- if(!q)raidTick(s,L);if(!q&&Math.random()<.3)L.push(EV[Math.random()*EV.length|0](s));
+ if(s.scout&&--s.scout.left<=0){s.exp[s.scout.z]=1;L.push('Der Erkundungstrupp ist zurück: Gebiet erkundet!'+(s.scout.z==0?' Ihr habt ein Raubritterlager entdeckt!':''));s.scout=null}if(!q)raidTick(s,L);if(!q&&Math.random()<.3)L.push(EV[Math.random()*EV.length|0](s));
  for(const x of R)r[x]=Math.min(k.cap,Math.round(r[x]*10)/10);
  if(!s.won&&s.pop>=100&&s.sat>=60&&r.food>=20&&r.coins>=100){s.won=1;L.push('Meridian ist eine blühende Stadt – Sieg!')}
  s.turn++;if(!q){L.slice().reverse().forEach(l=>s.log.unshift('P'+s.turn+': '+l));s.log.length=Math.min(s.log.length,40)}return L}
@@ -62,19 +63,24 @@ function raidTick(s,L){
    rep={win:0,cnt:Math.round(s.raid.str/2),txt:'Die Räuber plündern '+Math.round(f*100)+'% der Vorräte und beschädigen Gebäude (Reparatur 🪙5 je Gebäude). Verteidigung '+Math.round(D)+' gegen Angriff '+Math.round(A)+'.'}}
   s.rep=rep;s.raid=null;L.push(rep.txt)}
  else if(s.turn>=s.nr){s.raid={str:Math.round(rstr(s)*10)/10,left:2,merc:0};s.nr=s.turn+7+(Math.random()*4|0);s.alert=1;L.push('Ein Bote meldet Räuber! Ankunft in 2 Perioden.')}}
-function raidDlg(){const r=S.raid;dlg(`<h2>⚔️ Sicherheit</h2><p>Verteidigung: <b>${Math.round(dfn(S))}</b>${r?' (+'+r.merc+' Söldner)':''}</p>`+(r?`<p>Herr Stadthalter, Räuber nahen! Stärke etwa ${Math.round(r.str)}, Ankunft in ${r.left} Periode(n).</p><button data-a="mc">Söldner anheuern (🪙40, +6)</button><button data-a="tb">Tribut zahlen (🪙${Math.round(r.str*8)})</button>`:'<p>Derzeit ist kein Angriff gemeldet.</p>')+(S.peace>0?`<p>Das Lager ist zerschlagen. Frieden für ${S.peace} Perioden.</p>`:`<p>Expedition: Wachenstärke ${Math.round(dfn(S,1))} gegen Lager etwa ${Math.round(rstr(S)*2.5)}.</p><button data-a="ex">Expedition gegen das Lager (🔧10 🪙40)</button>`))}
-function expedition(){const need=rstr(S)*2.5,pw=dfn(S,1);if(S.res.coins<40||S.res.tools<10)return toast('Benötigt 🔧10 und 🪙40.');S.res.coins-=40;S.res.tools-=10;
+function raidDlg(){const r=S.raid;dlg(`<h2>⚔️ Sicherheit</h2><p>Verteidigung: <b>${Math.round(dfn(S))}</b>${r?' (+'+r.merc+' Söldner)':''}</p>`+(r?`<p>Herr Stadthalter, Räuber nahen! Stärke etwa ${Math.round(r.str)}, Ankunft in ${r.left} Periode(n).</p><button data-a="mc">Söldner anheuern (🪙40, +6)</button><button data-a="tb">Tribut zahlen (🪙${Math.round(r.str*8)})</button>`:'<p>Derzeit ist kein Angriff gemeldet.</p>')+(S.peace>0?`<p>Das Lager ist zerschlagen. Frieden für ${S.peace} Perioden.</p>`:!S.exp[0]?'<p>Der Standort der Räuber ist unbekannt. Erkunde die Randgebiete (🔭), um ihr Lager zu finden.</p>':`<p>Expedition: Wachenstärke ${Math.round(dfn(S,1))} gegen Lager etwa ${Math.round(rstr(S)*2.5)}.</p><button data-a="ex">Expedition gegen das Lager (🔧10 🪙40)</button>`))}
+function expedition(){if(!S.exp[0])return;const need=rstr(S)*2.5,pw=dfn(S,1);if(S.res.coins<40||S.res.tools<10)return toast('Benötigt 🔧10 und 🪙40.');S.res.coins-=40;S.res.tools-=10;
  if(pw>=need*(.8+Math.random()*.4)){S.peace=20;S.raid=null;S.log.unshift('Das Raubritterlager wurde zerschlagen.');after();dlg('<h2>⚔️ Lager zerschlagen</h2><p>Deine Wachen haben das Lager zerstört. Eine Weile herrscht Frieden.</p>')}
  else{S.sat=Math.max(0,S.sat-5);S.log.unshift('Die Expedition scheiterte.');after();dlg('<h2>Expedition gescheitert</h2><p>Deine Wachen waren zu schwach. Baue mehr Wachhäuser.</p>')}}
 $('rd').onclick=raidDlg;
+const SC={coins:15,food:6},TRD='Handel:<br>'+[['wood','🪙20 → 🪵10'],['stone','🪙24 → 🪨10'],['food','🪙15 → 🌾10'],['tools','🪙30 → 🔧5']].map(([k,l])=>`<button data-a="tr:${k}" style="background:#2f4a2a">${l}</button>`).join('')+'<br>';
+function scoutable(i){const x=i%3,y=i/3|0;return!S.exp[i]&&!S.scout&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=x+a,Y=y+b;return X>=0&&X<3&&Y>=0&&Y<3&&S.exp[Y*3+X]})}
+function scoutZone(i){if(!scoutable(i))return toast('Hier ist keine Erkundung möglich.');for(const k in SC)if(S.res[k]<SC[k])return toast('Zu wenig '+RN[k]);for(const k in SC)S.res[k]-=SC[k];S.scout={z:i,left:1};zsel=null;sfx('click');toast('Der Erkundungstrupp ist unterwegs.');after()}
+function trade(k){const t={wood:[20,10],stone:[24,10],food:[15,10],tools:[30,5]}[k];if(S.res.coins>=t[0]){S.res.coins-=t[0];S.res[k]=Math.min(stats(S).cap,S.res[k]+t[1]);sfx('click');after()}else toast('Zu wenig Münzen.')}
+function fog(){const z=cam.z;for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(S.exp[zoneOf(x,y)])continue;const[cx,cy]=P(x,y);if(cx<-40*z||cx>W+40*z||cy<-30*z||cy>H+30*z)continue;dia(cx,cy,1.04,`hsl(98,14%,${24+hs(x,y)*5}%)`)}}
 const zoneOf=(x,y)=>(y>>3)*3+(x>>3);
 function zinfo(i){const n=S.zones.filter(Boolean).length,c={coins:30*n,wood:15*n,stone:10*n},zx=i%3,zy=i/3|0,
  adj=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=zx+a,Y=zy+b;return X>=0&&X<3&&Y>=0&&Y<3&&S.zones[Y*3+X]}),need=n>=6?3:n>=3?2:1;let w='';
- if(!adj)w='Nur angrenzende Gebiete erschließbar';else if(need>S.stage)w='Erst ab Stufe '+ST[need];else for(const r in c)if(S.res[r]<c[r]){w='Zu wenig '+RN[r];break}return{c,w}}
+ if(!S.exp[i])w='Erst erkunden';else if(!adj)w='Nur angrenzende Gebiete erschließbar';else if(need>S.stage)w='Erst ab Stufe '+ST[need];else for(const r in c)if(S.res[r]<c[r]){w='Zu wenig '+RN[r];break}return{c,w}}
 function buyZone(i){const z=zinfo(i);if(z.w)return toast(z.w);for(const k in z.c)S.res[k]-=z.c[k];S.zones[i]=1;zsel=null;sfx('build');toast('Neues Gebiet erschlossen!');after()}
 // ---- Bauen ----
-const near=(x,y,m)=>{for(let j=-2;j<=2;j++)for(let i=-2;i<=2;i++){const a=x+i,b=y+j;if(a>=0&&b>=0&&a<N&&b<N&&S.map[b*N+a]==m)return 1}return 0};
-function why(id,x,y){const d=B[id];if(x<0||y<0||x>=N||y>=N)return'Außerhalb der Karte';if(d.st>S.stage)return'Noch gesperrt';if(!S.zones[zoneOf(x,y)])return'Gebiet noch nicht erschlossen';if(S.map[y*N+x])return'Nur auf freier Wiese baubar';if(at(x,y))return'Feld ist belegt';
+const near=(x,y,m)=>{for(let j=-2;j<=2;j++)for(let i=-2;i<=2;i++){const a=x+i,b=y+j;if(Math.abs(i)+Math.abs(j)<=2&&a>=0&&b>=0&&a<N&&b<N&&S.map[b*N+a]==m)return 1}return 0};
+function why(id,x,y){const d=B[id];if(x<0||y<0||x>=N||y>=N)return'Außerhalb der Karte';if(d.st>S.stage)return'Noch gesperrt';if(!S.zones[zoneOf(x,y)])return'Gebiet noch nicht erschlossen';if(d.water){if(S.map[y*N+x]!=2)return'Nur auf Wasser baubar';let u=0;for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const a=x+i,b=y+j;if(a>=0&&b>=0&&a<N&&b<N&&S.map[b*N+a]!=2)u=1}if(!u)return'Braucht Ufer in der Nähe'}else if(S.map[y*N+x])return'Nur auf freier Wiese baubar';if(at(x,y))return'Feld ist belegt';
  if(d.need&&!near(x,y,d.need))return d.need==1?'Braucht Wald in der Nähe':'Braucht Hügel in der Nähe';for(const k in d.c)if(S.res[k]<d.c[k])return'Zu wenig '+RN[k];return''}
 function build(id,x,y){const d=B[id];for(const k in d.c)S.res[k]-=d.c[k];S.bld.push({id,x,y,t:d.t});idx();sfx('build');after()}
 function demolish(b){const d=B[b.id];for(const k in d.c)S.res[k]+=Math.floor(d.c[k]/2);S.bld=S.bld.filter(x=>x!==b);idx();sel=null;sfx('click');after()}
@@ -89,20 +95,21 @@ function ui(){const k=stats(S),c=JSON.parse(JSON.stringify(S));step(c,1);
 function bar(){$('bl').innerHTML=Object.keys(B).map(id=>{const d=B[id],lk=d.st>S.stage;return`<button class="b${lk?' lk':''}${mode==id?' on':''}" data-id="${id}">${lk?'🔒':d.i}<small>${d.n}</small><small>${cost(d.c)}</small></button>`}).join('')}
 const eff=d=>(d.home?'🏠 '+d.home+' Plätze · ':'')+(d.job?'👷 '+d.job+' Jobs · ':'')+(d.use?'Verbraucht '+cost(d.use)+' · ':'')+(d.prod?'Erzeugt '+cost(d.prod)+' · ':'')+(d.sat?'😊 +'+d.sat+' · ':'')+(d.cap?'📦 +'+d.cap+' · ':'')+(d.def?'🛡️ +'+d.def+' · ':'');
 function info(){const e=$('info');let h='';
- if(mode){const d=B[mode],w=ghost?why(mode,ghost[0],ghost[1]):'';h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>Kosten ${cost(d.c)} · Bau ${d.t} Periode(n)<br>${eff(d)}<br>${ghost?rinfo(mode,ghost[0],ghost[1]):d.need||d.rad?'Tippe aufs Feld, um den Wirkbereich zu sehen.<br>':''}${ghost?(w?'⛔ '+w:'✅ Nochmal tippen zum Bauen'):'Tippe auf ein freies Feld.'}<br><button data-a="x">Abbrechen</button>`}
+ if(mode){const d=B[mode],w=ghost?why(mode,ghost[0],ghost[1]):'';h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>Kosten ${cost(d.c)} · Bau ${d.t} Periode(n)<br>${eff(d)}<br>${ghost?rinfo(mode,ghost[0],ghost[1]):''}${ghost?(w?'⛔ '+w:'✅ Nochmal tippen zum Bauen'):''}<br><button data-a="x">Abbrechen</button>`}
+ else if(zsel!=null&&!S.exp[zsel]){const ok=scoutable(zsel);h=`<b>🔭 Unerforschtes Gebiet</b><br>${S.scout?'Ein Trupp ist bereits unterwegs.':ok?'Ein Erkundungstrupp deckt es in 1 Periode auf. Kosten '+cost(SC):'Nur an erkundete Gebiete angrenzende Gebiete lassen sich erkunden.'}<br>${ok?'<button data-a="sc">Trupp entsenden</button>':''}<button data-a="x" style="background:#2f4a2a">Schließen</button>`}
  else if(zsel!=null){const z=zinfo(zsel);h=`<b>🗝️ Neues Baugebiet</b><br>Kosten ${cost(z.c)}<br>${z.w?'⛔ '+z.w:'✅ Erschließbar'}<br><button data-a="bz">Erschließen</button><button data-a="x" style="background:#2f4a2a">Schließen</button>`}
- else if(sel){const d=B[sel.id];h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>${eff(d)}<br>${rinfo(sel.id,sel.x,sel.y)}Status: ${sel.dmg?'🔥 Beschädigt':sel.t>0?'Im Bau, noch '+sel.t+' Periode(n)':'in Betrieb'}<br>${sel.dmg?'<button data-a="rp" style="background:#2f4a2a">Reparieren (🪙5)</button>':''}<button data-a="dm">Abreißen (50% Rückerstattung)</button><button data-a="x" style="background:#2f4a2a">Schließen</button>`}
+ else if(sel){const d=B[sel.id];h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>${eff(d)}<br>${rinfo(sel.id,sel.x,sel.y)}Status: ${sel.dmg?'🔥 Beschädigt':sel.t>0?'Im Bau, noch '+sel.t+' Periode(n)':'in Betrieb'}<br>${sel.id=='market'&&!sel.t&&!sel.dmg?TRD:''}${sel.dmg?'<button data-a="rp" style="background:#2f4a2a">Reparieren (🪙5)</button>':''}<button data-a="dm">Abreißen (50% Rückerstattung)</button><button data-a="x" style="background:#2f4a2a">Schließen</button>`}
  e.innerHTML=h;e.hidden=!h}
 function dlg(h){$('dlg').innerHTML=`<div class=bx>${h}<button data-a="cl">Schließen</button></div>`;$('dlg').hidden=false}
-const HELP='<h2>So wird gespielt</h2><p>Du bist der Stadthalter von Meridian. Räuber bedrohen die Stadt: Türme, Wachhäuser und Mauern schützen dich – nur wenn sie siegen, plündern sie. Das ⚔️-Symbol zeigt die Lage.<br><br>1. Wähle unten ein Gebäude, tippe aufs Feld, tippe nochmal zum Bauen.<br>2. „Periode beenden“ lässt die Wirtschaft laufen: Produktion, Essen, Steuern, Wachstum.<br>3. Die kleinen Zahlen oben zeigen die erwartete Änderung.<br>4. Ziehen = Karte bewegen, zwei Finger = Zoomen.<br><br>Ziel: 100 Einwohner, 60% Zufriedenheit, Nahrung ≥ 20, Münzen ≥ 100. Dunkle Gebiete (🗝️) schaltest du per Tipp frei. Wald und Hügel sind endlich; im Menü kaufst du bei Händlern Rohstoffe. Ohne Nahrung und Jobs sinkt die Zufriedenheit – du kannst dich jederzeit erholen.</p>';
+const HELP='<h2>So wird gespielt</h2><p>Du bist der Stadthalter von Meridian. Räuber bedrohen die Stadt: Türme, Wachhäuser und Mauern schützen dich – nur wenn sie siegen, plündern sie. Das ⚔️-Symbol zeigt die Lage.<br><br>1. Wähle unten ein Gebäude, tippe aufs Feld, tippe nochmal zum Bauen.<br>2. „Periode beenden“ lässt die Wirtschaft laufen: Produktion, Essen, Steuern, Wachstum.<br>3. Die kleinen Zahlen oben zeigen die erwartete Änderung.<br>4. Ziehen = Karte bewegen, zwei Finger = Zoomen.<br><br>Ziel: 100 Einwohner, 60% Zufriedenheit, Nahrung ≥ 20, Münzen ≥ 100. Dunkle Gebiete (🗝️) schaltest du per Tipp frei. Unbekannte Gebiete (❓) deckst du per Erkundungstrupp (🔭) auf, dort findest du auch das Räuberlager. Wald und Hügel sind endlich; Rohstoffe kaufst du am Marktplatz (antippen). Fischerboote stehen am Ufer auf dem Wasser. Ohne Nahrung und Jobs sinkt die Zufriedenheit – du kannst dich jederzeit erholen.</p>';
 function menu(){const k=stats(S),e=Math.min(S.pop,k.jobs);dlg(`<h2>Meridian</h2><p>Periode ${S.turn} · ${ST[S.stage]} · Einwohner ${S.pop} · Beschäftigte ${e} · Arbeitslosenquote ${S.pop?Math.round((S.pop-e)/S.pop*100):0}% · Zufriedenheit ${Math.round(S.sat)}%</p>
-<button data-a="sv">💾 Speichern</button><button data-a="nw">🆕 Neues Spiel</button><button data-a="so">🔊 Ton: ${opt.sound?'an':'aus'}</button><button data-a="mu">🎵 Musik: ${opt.music?'an':'aus'}</button><h3>Händler</h3><button data-a="tr:wood">🪙20 → 🪵10</button><button data-a="tr:stone">🪙24 → 🪨10</button><button data-a="tr:food">🪙15 → 🌾10</button><button data-a="tr:tools">🪙30 → 🔧5</button><button data-a="hp">❓ Anleitung</button><h3>Ereignisse</h3><div class=lg>${S.log.slice(0,12).join('<br>')}</div>`)}
+<button data-a="sv">💾 Speichern</button><button data-a="nw">🆕 Neues Spiel</button><button data-a="so">🔊 Ton: ${opt.sound?'an':'aus'}</button><button data-a="mu">🎵 Musik: ${opt.music?'an':'aus'}</button><button data-a="hp">❓ Anleitung</button><h3>Ereignisse</h3><div class=lg>${S.log.slice(0,12).join('<br>')}</div>`)}
 $('dlg').onclick=e=>{const a=e.target.dataset.a;if(!a)return;if(a=='cl')$('dlg').hidden=true;
- else if(a=='sv'){put('save',{v:3,S,opt}).then(()=>toast('Gespeichert.'));$('dlg').hidden=true}
+ else if(a=='sv'){put('save',{v:4,S,opt}).then(()=>toast('Gespeichert.'));$('dlg').hidden=true}
  else if(a=='nw'){if(confirm('Neues Spiel beginnen? Der alte Stand geht verloren.')){newGame();after();$('dlg').hidden=true}}
  else if(a=='so'){opt.sound^=1;save();menu()}else if(a=='mu'){opt.music^=1;amb();save();menu()}else if(a=='hp')dlg(HELP);else if(a=='mc'){if(S.raid&&S.res.coins>=40){S.res.coins-=40;S.raid.merc+=6;sfx('click');after();raidDlg()}else toast('Zu wenig Münzen.')}
  else if(a=='tb'&&S.raid){const c=Math.round(S.raid.str*8);if(S.res.coins>=c){S.res.coins-=c;S.raid=null;S.log.unshift('Tribut gezahlt, die Räuber ziehen ab.');after();raidDlg()}else toast('Zu wenig Münzen.')}else if(a=='ex')expedition();else if(a.startsWith('tr:')){const k=a.slice(3),t={wood:[20,10],stone:[24,10],food:[15,10],tools:[30,5]}[k];if(S.res.coins>=t[0]){S.res.coins-=t[0];S.res[k]+=t[1];sfx('click');after();menu()}else toast('Zu wenig Münzen.')}};
-$('info').onclick=e=>{const a=e.target.dataset.a;if(a=='x')mode=ghost=sel=zsel=null;else if(a=='bz'&&zsel!=null)buyZone(zsel);else if(a=='dm'&&sel)demolish(sel);else if(a=='rp'&&sel&&sel.dmg&&S.res.coins>=5){S.res.coins-=5;sel.dmg=0;sfx('build');after()}ui()};
+$('info').onclick=e=>{const a=e.target.dataset.a;if(a=='x')mode=ghost=sel=zsel=null;else if(a&&a.startsWith('tr:'))trade(a.slice(3));else if(a=='sc'&&zsel!=null)scoutZone(zsel);else if(a=='bz'&&zsel!=null)buyZone(zsel);else if(a=='dm'&&sel)demolish(sel);else if(a=='rp'&&sel&&sel.dmg&&S.res.coins>=5){S.res.coins-=5;sel.dmg=0;sfx('build');after()}ui()};
 $('bl').onclick=e=>{const b=e.target.closest('.b');if(!b)return;const id=b.dataset.id;if(B[id].st>S.stage)return toast('Freigeschaltet ab: '+ST[B[id].st]);sfx('click');mode=mode==id?null:id;ghost=sel=zsel=null;ui()};
 $('nx').onclick=nextTurn;$('mn').onclick=menu;
 $('zoom').onclick=e=>{const z=e.target.dataset.z;if(z==null)return;if(z==0)centerOn(10,10);else zoomAt(W/2,H/2,z>0?1.25:.8)};
@@ -141,7 +148,7 @@ function shoreDraw(){const z=cam.z;g.lineJoin=g.lineCap='round';
   g.beginPath();g.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length-1;i++)g.quadraticCurveTo(p[i][0],p[i][1],(p[i][0]+p[i+1][0])/2,(p[i][1]+p[i+1][1])/2);g.lineTo(p[p.length-1][0],p[p.length-1][1]);
   g.strokeStyle='rgba(255,255,255,.3)';g.lineWidth=7*z;g.stroke();g.strokeStyle='#e6d49a';g.lineWidth=3.2*z;g.stroke()}}
 function rangeFx(x,y,id){const d=B[id],r=d.need?2:d.rad||0;if(!r)return;const z=cam.z;
- for(let j=-r;j<=r;j++)for(let i=-r;i<=r;i++){if(!d.need&&Math.abs(i)+Math.abs(j)>r)continue;const a=x+i,b=y+j;if(a<0||b<0||a>=N||b>=N)continue;const[cx,cy]=P(a,b),hit=d.need&&S.map[b*N+a]==d.need&&S.rs[b*N+a]>0,bb=at(a,b),hom=d.rad&&bb&&B[bb.id].home;
+ for(let j=-r;j<=r;j++)for(let i=-r;i<=r;i++){if(Math.abs(i)+Math.abs(j)>r)continue;const a=x+i,b=y+j;if(a<0||b<0||a>=N||b>=N)continue;const[cx,cy]=P(a,b),hit=d.need&&S.map[b*N+a]==d.need&&S.rs[b*N+a]>0,bb=at(a,b),hom=d.rad&&bb&&B[bb.id].home;
   dia(cx,cy,1,hit?'rgba(120,230,90,.55)':hom?'rgba(255,225,90,.55)':'rgba(255,225,120,.24)');dp(cx,cy,1);g.strokeStyle='rgba(255,240,160,.8)';g.lineWidth=1.2*z;g.stroke()}}
 function rinfo(id,x,y){const d=B[id];if(d.need)return'Vorkommen in Reichweite (grün): '+Math.floor(tilesNear(S,x,y,d.need).reduce((a,i)=>a+S.rs[i],0))+'<br>';
  if(d.rad){let c=0;for(const b of S.bld)if(!b.t&&B[b.id].home&&Math.abs(b.x-x)+Math.abs(b.y-y)<=d.rad)c+=B[b.id].home;return'Versorgt '+c+' Wohnplätze im Umkreis von '+d.rad+' Feldern (gelb)<br>'}return''}
@@ -164,21 +171,21 @@ function draw(ts){const z=cam.z,t=ts/1000,dt=Math.min(.1,(ts-last)/1000);last=ts
  const vis=(cx,cy)=>cx>-50*z&&cx<W+50*z&&cy>-70*z&&cy<H+60*z;
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){const[cx,cy]=P(x,y);if(!vis(cx,cy))continue;const m=S.map[y*N+x],h=hs(x,y);
   dia(cx,cy,1.03,m==2?`hsl(205,45%,${47+3*Math.sin(t*1.5+x+y)}%)`:m==1?`hsl(100,30%,${30+h*6}%)`:m==3?`hsl(40,12%,${52+h*8}%)`:`hsl(${82+h*12},34%,${44+h*7}%)`);gd(x,y,m,h,cx,cy);if(!S.zones[zoneOf(x,y)])dia(cx,cy,1.03,'rgba(25,35,25,.5)')}
- if(mode&&ghost)rangeFx(ghost[0],ghost[1],mode);else if(sel&&!mode)rangeFx(sel.x,sel.y,sel.id);wat(t);while(WK.length<Math.min(14,Math.round(S.pop/2))&&S.bld.length)WK.push({x:S.bld[0].x,y:S.bld[0].y,tx:0,ty:0});while(WK.length>Math.round(S.pop/2))WK.pop();
- const tg=S.bld.filter(b=>!b.t&&!B[b.id].flat);
+ if(mode&&ghost)rangeFx(ghost[0],ghost[1],mode);else if(sel&&!mode)rangeFx(sel.x,sel.y,sel.id);wat(t);fog();while(WK.length<Math.min(14,Math.round(S.pop/2))&&S.bld.length)WK.push({x:S.bld[0].x,y:S.bld[0].y,tx:0,ty:0});while(WK.length>Math.round(S.pop/2))WK.pop();
+ const tg=S.bld.filter(b=>!b.t&&!B[b.id].flat&&!B[b.id].water);
  for(const w of WK){const d=Math.hypot(w.tx-w.x,w.ty-w.y);if(d<.1&&tg.length){const b=tg[Math.random()*tg.length|0];w.tx=b.x+(Math.random()-.5)*.6;w.ty=b.y+.6}else if(d>=.1){w.x+=(w.tx-w.x)/d*.8*dt;w.y+=(w.ty-w.y)/d*.8*dt}}
  const ws=WK.slice().sort((a,b)=>a.x+a.y-b.x-b.y);let wi=0;
  for(let s=0;s<2*N;s++){for(let x=Math.max(0,s-N+1);x<=Math.min(s,N-1);x++){const y=s-x,[cx,cy]=P(x,y);if(!vis(cx,cy))continue;const m=S.map[y*N+x],b=at(x,y),h=hs(x,y);
-   g.globalAlpha=S.zones[zoneOf(x,y)]?1:.5;if(m==1){treeSpr(h*3|0,cx-10*z,cy+1*z,.95+h*.2);treeSpr(h*7|0,cx+9*z,cy+5*z,.85+h*.25);if(h>.5)treeSpr(h*11|0,cx+1*z,cy-6*z,.8)}else if(m==3){const c=SPR.rock;if(c)g.drawImage(c,cx-40*z,cy-44*z,80*z,60*z)}
+   g.globalAlpha=S.zones[zoneOf(x,y)]?1:.5;if(!S.exp[zoneOf(x,y)]){}else if(m==1){treeSpr(h*3|0,cx-10*z,cy+1*z,.95+h*.2);treeSpr(h*7|0,cx+9*z,cy+5*z,.85+h*.25);if(h>.5)treeSpr(h*11|0,cx+1*z,cy-6*z,.8)}else if(m==3){const c=SPR.rock;if(c)g.drawImage(c,cx-40*z,cy-44*z,80*z,60*z)}
    g.globalAlpha=1;if(b)drawB(b,cx,cy)}
   while(wi<ws.length&&ws[wi].x+ws[wi].y<s+1){const w=ws[wi++],[px,py]=P(w.x,w.y);{const c=SPR['v'+(wi%4)];if(c)g.drawImage(c,px-5*z,py-19*z-Math.abs(Math.sin(t*8+wi))*1.5*z,10*z,20*z)}}}
  if(mode&&ghost){const[cx,cy]=P(ghost[0],ghost[1]),ok=!why(mode,ghost[0],ghost[1]);dia(cx,cy,1,ok?'rgba(80,220,90,.5)':'rgba(230,60,50,.55)');SPR[mode]?spr(SPR[mode],cx,cy,.65):box(cx,cy,B[mode],.65)}
  if(sel&&!mode){const[cx,cy]=P(sel.x,sel.y);dp(cx,cy,1.05);g.strokeStyle='#e0b048';g.lineWidth=3;g.stroke()}
  {const gr=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);gr.addColorStop(0,'rgba(255,210,140,0)');gr.addColorStop(1,'rgba(30,20,10,.28)');g.fillStyle=gr;g.fillRect(0,0,W,H)}
- if(!S.peace){const[px,py]=P(S.camp.x,S.camp.y);g.globalAlpha=1;if(SPR.camp)spr(SPR.camp,px,py,1);g.font=26*z+'px serif';g.textAlign='center';if(S.raid)g.fillText('⚔️'+S.raid.left,px,py-50*z)}
+ if(!S.peace&&S.exp[0]){const[px,py]=P(S.camp.x,S.camp.y);g.globalAlpha=1;if(SPR.camp)spr(SPR.camp,px,py,1);g.font=26*z+'px serif';g.textAlign='center';if(S.raid)g.fillText('⚔️'+S.raid.left,px,py-50*z)}
  if(battle){battle.t+=dt/4;const n=Math.min(10,3+battle.r.cnt);for(let i=0;i<n;i++){const u=cl(battle.t*1.2-i*.03,0,1),[px,py]=P(S.camp.x+(10-S.camp.x)*u+(i%3)*.3,S.camp.y+(10-S.camp.y)*u+(i/3|0)*.3);{const c=SPR.raider;if(c)g.drawImage(c,px-6*z,py-22*z,12*z,24*z)}}
   if(battle.t>=1.2){const r=battle.r;battle=null;dlg(`<h2>${r.win?'🛡️ Angriff abgewehrt':'🔥 Stadt geplündert'}</h2><p>${r.txt}</p>`);ui()}}
- for(let i=0;i<9;i++)if(!S.zones[i]){const[px,py]=P((i%3)*8+4,(i/3|0)*8+4);g.globalAlpha=1;g.font=28*z+'px serif';g.textAlign='center';g.fillText(zinfo(i).w.startsWith('Nur')?'🔒':'🗝️',px,py)}
+ for(let i=0;i<9;i++)if(!S.zones[i]){const[px,py]=P((i%3)*8+4,(i/3|0)*8+4);g.globalAlpha=1;g.font=28*z+'px serif';g.textAlign='center';g.fillText(S.scout&&S.scout.z==i?'🧭':!S.exp[i]?(scoutable(i)?'🔭':'❓'):zinfo(i).w.startsWith('Nur')?'🔒':'🗝️',px,py)}
  requestAnimationFrame(draw)}
 // ---- Audio (Dateien in sound-*.wav, austauschbar) ----
 const A={on:0};
@@ -189,8 +196,8 @@ function unlock(){if(!A.on){A.on=1;amb()}}
 const DB=()=>new Promise((ok,no)=>{const r=indexedDB.open('meridian',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
 const put=async(k,v)=>{const d=await DB();return new Promise((ok,no)=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=ok;t.onerror=t.onabort=()=>no(t.error)})};
 const get=async k=>{const d=await DB();return new Promise((ok,no)=>{const r=d.transaction('kv').objectStore('kv').get(k);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})};
-let sT;function save(){clearTimeout(sT);sT=setTimeout(()=>put('save',{v:3,S,opt}).catch(()=>toast('Speichern fehlgeschlagen.')),400)}
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&S)put('save',{v:3,S,opt}).catch(()=>{})});
-(async()=>{resize();try{const d=await get('save');if(d&&d.v===3&&d.S&&d.S.camp&&d.S.zones&&d.S.map&&d.S.map.length==N*N){S=d.S;opt=d.opt||opt;idx();centerOn(10,10)}}catch(e){}
+let sT;function save(){clearTimeout(sT);sT=setTimeout(()=>put('save',{v:4,S,opt}).catch(()=>toast('Speichern fehlgeschlagen.')),400)}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S)put('save',{v:4,S,opt}).catch(()=>{})});
+(async()=>{resize();try{const d=await get('save');if(d&&d.v===4&&d.S&&d.S.exp&&d.S.camp&&d.S.zones&&d.S.map&&d.S.map.length==N*N){S=d.S;opt=d.opt||opt;idx();centerOn(10,10)}}catch(e){}
  if(!S){newGame();dlg(HELP)}ui();requestAnimationFrame(draw);
  if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js').catch(()=>{})})();
