@@ -20,7 +20,7 @@ burgher:{n:'Bürgerhaus',i:'🏛️',c:{wood:20,stone:15,coins:20},st:3,t:2,h:32
 };
 const hs=(x,y)=>((x*73856093^y*19349663)>>>0)%100/100,cl=(v,a,b)=>Math.max(a,Math.min(b,v)),cost=c=>Object.keys(c).map(k=>RI[k]+c[k]).join(' '),
 rnd=a=>()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
-let battle=null,zsel=null,S,og=new Map,cam={x:0,y:0,z:.8},mode=null,ghost=null,sel=null,W,H,dpr,opt={sound:1,music:1},WK=[],last=0,toastT,cv=$('c'),g=cv.getContext('2d');
+let shoreC=null,battle=null,zsel=null,S,og=new Map,cam={x:0,y:0,z:.8},mode=null,ghost=null,sel=null,W,H,dpr,opt={sound:1,music:1},WK=[],last=0,toastT,cv=$('c'),g=cv.getContext('2d');
 const at=(x,y)=>og.get(y*N+x),idx=()=>{og=new Map;S.bld.forEach(b=>og.set(b.y*N+b.x,b))};
 function genMap(){const r=rnd((Math.random()*1e9)|0),p=Array.from({length:8},()=>r()*6),n=(x,y,o)=>Math.sin(x*.45+p[o])+Math.sin(y*.4+p[o+1])+Math.sin((x+y)*.28+p[o+2])+Math.sin((x-y)*.5+p[o+3]),m=[];
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){let t=0;if(n(x,y,0)>1.2)t=1;else if(n(x,y,4)>2.1)t=3;
@@ -89,9 +89,9 @@ function ui(){const k=stats(S),c=JSON.parse(JSON.stringify(S));step(c,1);
 function bar(){$('bl').innerHTML=Object.keys(B).map(id=>{const d=B[id],lk=d.st>S.stage;return`<button class="b${lk?' lk':''}${mode==id?' on':''}" data-id="${id}">${lk?'🔒':d.i}<small>${d.n}</small><small>${cost(d.c)}</small></button>`}).join('')}
 const eff=d=>(d.home?'🏠 '+d.home+' Plätze · ':'')+(d.job?'👷 '+d.job+' Jobs · ':'')+(d.use?'Verbraucht '+cost(d.use)+' · ':'')+(d.prod?'Erzeugt '+cost(d.prod)+' · ':'')+(d.sat?'😊 +'+d.sat+' · ':'')+(d.cap?'📦 +'+d.cap+' · ':'')+(d.def?'🛡️ +'+d.def+' · ':'');
 function info(){const e=$('info');let h='';
- if(mode){const d=B[mode],w=ghost?why(mode,ghost[0],ghost[1]):'';h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>Kosten ${cost(d.c)} · Bau ${d.t} Periode(n)<br>${eff(d)}<br>${ghost?(w?'⛔ '+w:'✅ Nochmal tippen zum Bauen'):'Tippe auf ein freies Feld.'}<br><button data-a="x">Abbrechen</button>`}
+ if(mode){const d=B[mode],w=ghost?why(mode,ghost[0],ghost[1]):'';h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>Kosten ${cost(d.c)} · Bau ${d.t} Periode(n)<br>${eff(d)}<br>${ghost?rinfo(mode,ghost[0],ghost[1]):d.need||d.rad?'Tippe aufs Feld, um den Wirkbereich zu sehen.<br>':''}${ghost?(w?'⛔ '+w:'✅ Nochmal tippen zum Bauen'):'Tippe auf ein freies Feld.'}<br><button data-a="x">Abbrechen</button>`}
  else if(zsel!=null){const z=zinfo(zsel);h=`<b>🗝️ Neues Baugebiet</b><br>Kosten ${cost(z.c)}<br>${z.w?'⛔ '+z.w:'✅ Erschließbar'}<br><button data-a="bz">Erschließen</button><button data-a="x" style="background:#2f4a2a">Schließen</button>`}
- else if(sel){const d=B[sel.id];h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>${eff(d)}<br>${d.need?'Vorkommen in Reichweite: '+Math.floor(tilesNear(S,sel.x,sel.y,d.need).reduce((a,i)=>a+S.rs[i],0))+'<br>':''}Status: ${sel.dmg?'🔥 Beschädigt':sel.t>0?'Im Bau, noch '+sel.t+' Periode(n)':'in Betrieb'}<br>${sel.dmg?'<button data-a="rp" style="background:#2f4a2a">Reparieren (🪙5)</button>':''}<button data-a="dm">Abreißen (50% Rückerstattung)</button><button data-a="x" style="background:#2f4a2a">Schließen</button>`}
+ else if(sel){const d=B[sel.id];h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>${eff(d)}<br>${rinfo(sel.id,sel.x,sel.y)}Status: ${sel.dmg?'🔥 Beschädigt':sel.t>0?'Im Bau, noch '+sel.t+' Periode(n)':'in Betrieb'}<br>${sel.dmg?'<button data-a="rp" style="background:#2f4a2a">Reparieren (🪙5)</button>':''}<button data-a="dm">Abreißen (50% Rückerstattung)</button><button data-a="x" style="background:#2f4a2a">Schließen</button>`}
  e.innerHTML=h;e.hidden=!h}
 function dlg(h){$('dlg').innerHTML=`<div class=bx>${h}<button data-a="cl">Schließen</button></div>`;$('dlg').hidden=false}
 const HELP='<h2>So wird gespielt</h2><p>Du bist der Stadthalter von Meridian. Räuber bedrohen die Stadt: Türme, Wachhäuser und Mauern schützen dich – nur wenn sie siegen, plündern sie. Das ⚔️-Symbol zeigt die Lage.<br><br>1. Wähle unten ein Gebäude, tippe aufs Feld, tippe nochmal zum Bauen.<br>2. „Periode beenden“ lässt die Wirtschaft laufen: Produktion, Essen, Steuern, Wachstum.<br>3. Die kleinen Zahlen oben zeigen die erwartete Änderung.<br>4. Ziehen = Karte bewegen, zwei Finger = Zoomen.<br><br>Ziel: 100 Einwohner, 60% Zufriedenheit, Nahrung ≥ 20, Münzen ≥ 100. Dunkle Gebiete (🗝️) schaltest du per Tipp frei. Wald und Hügel sind endlich; im Menü kaufst du bei Händlern Rohstoffe. Ohne Nahrung und Jobs sinkt die Zufriedenheit – du kannst dich jederzeit erholen.</p>';
@@ -118,9 +118,9 @@ cv.onpointermove=e=>{const p=ptr.get(e.pointerId);if(!p)return;
  if(ptr.size==1){cam.x+=e.clientX-p.x;cam.y+=e.clientY-p.y;moved+=Math.abs(e.clientX-p.x)+Math.abs(e.clientY-p.y);p.x=e.clientX;p.y=e.clientY;clamp()}
  else if(ptr.size==2){const a=[...ptr.values()],d0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);p.x=e.clientX;p.y=e.clientY;const d1=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(d0>10)zoomAt((a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2,d1/d0)}};
 cv.onpointerup=cv.onpointercancel=e=>{const had=ptr.delete(e.pointerId);if(had&&e.type=='pointerup'&&!multi&&moved<10)tap(e.clientX,e.clientY)};
-function tap(px,py){const[x,y]=pick(px,py);
+function tap(px,py){let[x,y]=pick(px,py);if(mode&&ghost&&rectHit(px,py,ghost[0],ghost[1],B[mode]))[x,y]=ghost;
  if(mode){if(ghost&&ghost[0]==x&&ghost[1]==y&&!why(mode,x,y))build(mode,x,y);else{ghost=[x,y];info();const w=why(mode,x,y);if(w)toast(w)}}
- else{const b=at(x,y);sel=b||null;zsel=!b&&x>=0&&y>=0&&x<N&&y<N&&!S.zones[zoneOf(x,y)]?zoneOf(x,y):null;sfx('click',.3);info()}}
+ else{const b=hitB(px,py)||at(x,y);sel=b||null;zsel=!b&&x>=0&&y>=0&&x<N&&y<N&&!S.zones[zoneOf(x,y)]?zoneOf(x,y):null;sfx('click',.3);info()}}
 document.addEventListener('gesturestart',e=>e.preventDefault());
 function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr}
 addEventListener('resize',()=>{resize();clamp()});
@@ -131,10 +131,26 @@ function tree(cx,cy,s){const z=cam.z*s;g.fillStyle='#5a3d22';g.fillRect(cx-1.5*z
 function treeSpr(i,x,y,sc){const c=SPR['tree'+(i%3)],z=cam.z*sc;if(c)g.drawImage(c,x-20*z,y-50*z,40*z,56*z);else tree(x,y,sc)}
 function spr(c,cx,cy,a){const z=cam.z;g.globalAlpha=a;g.drawImage(c,cx-40*z,cy-84*z,80*z,110*z);g.globalAlpha=1}
 function gd(x,y,m,h,cx,cy){if(m||h>.4||at(x,y))return;const c=SPR[h<.1?'flower':'tuft'],z=cam.z;if(c)g.drawImage(c,cx+(h*50-12)*z,cy+(h*30-6)*z,16*z,10*z)}
+function shoreLines(){if(shoreC&&shoreC.m===S.map)return shoreC.l;const E=[],adj=new Map,add=(a,b)=>{const i=E.length;E.push([a,b,0]);for(const k of[a,b]){const q=k[0]+','+k[1];(adj.get(q)||adj.set(q,[]).get(q)).push(i)}};
+ for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(S.map[y*N+x]!=2)continue;[[1,0,[x+1,y],[x+1,y+1]],[0,1,[x+1,y+1],[x,y+1]],[-1,0,[x,y+1],[x,y]],[0,-1,[x,y],[x+1,y]]].forEach(([a,b,p,q])=>{const nx=x+a,ny=y+b;if(nx>=0&&ny>=0&&nx<N&&ny<N&&S.map[ny*N+nx]!=2)add(p,q)})}
+ const L=[];for(let i=0;i<E.length;i++){if(E[i][2])continue;E[i][2]=1;const ch=[E[i][0],E[i][1]];
+  for(const dir of[0,1])for(;;){const e=dir?ch[ch.length-1]:ch[0],j=adj.get(e[0]+','+e[1]).find(k=>!E[k][2]);if(j==null)break;E[j][2]=1;const o=E[j][0][0]==e[0]&&E[j][0][1]==e[1]?E[j][1]:E[j][0];dir?ch.push(o):ch.unshift(o)}
+  L.push(ch)}shoreC={m:S.map,l:L};return L}
+function shoreDraw(){const z=cam.z;g.lineJoin=g.lineCap='round';
+ for(const ch of shoreLines()){const p=ch.map(([a,b])=>[(a-b)*32*z+cam.x,(a+b)*16*z+cam.y]);if(!p.some(q=>q[0]>-60&&q[0]<W+60&&q[1]>-60&&q[1]<H+60))continue;
+  g.beginPath();g.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length-1;i++)g.quadraticCurveTo(p[i][0],p[i][1],(p[i][0]+p[i+1][0])/2,(p[i][1]+p[i+1][1])/2);g.lineTo(p[p.length-1][0],p[p.length-1][1]);
+  g.strokeStyle='rgba(255,255,255,.3)';g.lineWidth=7*z;g.stroke();g.strokeStyle='#e6d49a';g.lineWidth=3.2*z;g.stroke()}}
+function rangeFx(x,y,id){const d=B[id],r=d.need?2:d.rad||0;if(!r)return;const z=cam.z;
+ for(let j=-r;j<=r;j++)for(let i=-r;i<=r;i++){if(!d.need&&Math.abs(i)+Math.abs(j)>r)continue;const a=x+i,b=y+j;if(a<0||b<0||a>=N||b>=N)continue;const[cx,cy]=P(a,b),hit=d.need&&S.map[b*N+a]==d.need&&S.rs[b*N+a]>0,bb=at(a,b),hom=d.rad&&bb&&B[bb.id].home;
+  dia(cx,cy,1,hit?'rgba(120,230,90,.55)':hom?'rgba(255,225,90,.55)':'rgba(255,225,120,.24)');dp(cx,cy,1);g.strokeStyle='rgba(255,240,160,.8)';g.lineWidth=1.2*z;g.stroke()}}
+function rinfo(id,x,y){const d=B[id];if(d.need)return'Vorkommen in Reichweite (grün): '+Math.floor(tilesNear(S,x,y,d.need).reduce((a,i)=>a+S.rs[i],0))+'<br>';
+ if(d.rad){let c=0;for(const b of S.bld)if(!b.t&&B[b.id].home&&Math.abs(b.x-x)+Math.abs(b.y-y)<=d.rad)c+=B[b.id].home;return'Versorgt '+c+' Wohnplätze im Umkreis von '+d.rad+' Feldern (gelb)<br>'}return''}
+function rectHit(px,py,x,y,d){const z=cam.z,[cx,cy]=P(x,y),top=d.flat?16:d.h+(d.rh||0)+10;return Math.abs(px-cx)<=26*z*(d.s||1)+4*z&&py>=cy-top*z&&py<=cy+14*z}
+function hitB(px,py){let best=null;for(const b of S.bld)if(rectHit(px,py,b.x,b.y,B[b.id])&&(!best||b.x+b.y>best.x+best.y))best=b;return best}
 function wat(t){const z=cam.z,E=[[1,0,32,0,0,16],[0,1,0,16,-32,0],[-1,0,-32,0,0,-16],[0,-1,0,-16,32,0]];g.lineCap='round';
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(S.map[y*N+x]!=2)continue;const[cx,cy]=P(x,y);if(cx<-40*z||cx>W+40*z||cy<-30*z||cy>H+30*z)continue;
   const o=Math.sin(t*1.2+x*2+y)*4*z;g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1.2*z;g.beginPath();g.moveTo(cx-8*z+o,cy-2*z);g.lineTo(cx+2*z+o,cy-2*z);g.moveTo(cx-2*z-o,cy+5*z);g.lineTo(cx+8*z-o,cy+5*z);g.stroke();
-  g.strokeStyle='#e6d49a';g.lineWidth=3*z;for(const[a,b,x1,y1,x2,y2]of E){const nx=x+a,ny=y+b;if(nx>=0&&ny>=0&&nx<N&&ny<N&&S.map[ny*N+nx]!=2){g.beginPath();g.moveTo(cx+x1*z,cy+y1*z);g.lineTo(cx+x2*z,cy+y2*z);g.stroke()}}}}
+  }shoreDraw()}
 function fx(b,cx,cy){const z=cam.z,t=performance.now()/1000,m=SM[b.id];if(m)for(let i=0;i<3;i++){const u=(t*.4+i/3)%1;g.fillStyle=`rgba(235,235,235,${.5*(1-u)})`;g.beginPath();g.arc(cx+(m[0]+u*6+Math.sin(t+i)*1.5)*z,cy+(m[1]-u*18)*z,(2+u*3)*z,0,7);g.fill()}
  if(b.id=='mill'){g.save();g.translate(cx+8*z,cy-34*z);g.rotate(t*.7);g.fillStyle='#e6d9b0';g.strokeStyle='#5a4028';g.lineWidth=1*z;for(let i=0;i<4;i++){g.rotate(Math.PI/2);g.fillRect(-3.5*z,-24*z,7*z,19*z);g.strokeRect(-3.5*z,-24*z,7*z,19*z)}g.restore()}}
 function box(cx,cy,d,a){const z=cam.z;g.globalAlpha=a;if(d.flat){dia(cx,cy,.95,'#b9a27a');dia(cx,cy,.7,'#cdb98f');g.globalAlpha=1;return}
@@ -148,7 +164,7 @@ function draw(ts){const z=cam.z,t=ts/1000,dt=Math.min(.1,(ts-last)/1000);last=ts
  const vis=(cx,cy)=>cx>-50*z&&cx<W+50*z&&cy>-70*z&&cy<H+60*z;
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){const[cx,cy]=P(x,y);if(!vis(cx,cy))continue;const m=S.map[y*N+x],h=hs(x,y);
   dia(cx,cy,1.03,m==2?`hsl(205,45%,${47+3*Math.sin(t*1.5+x+y)}%)`:m==1?`hsl(100,30%,${30+h*6}%)`:m==3?`hsl(40,12%,${52+h*8}%)`:`hsl(${82+h*12},34%,${44+h*7}%)`);gd(x,y,m,h,cx,cy);if(!S.zones[zoneOf(x,y)])dia(cx,cy,1.03,'rgba(25,35,25,.5)')}
- wat(t);while(WK.length<Math.min(14,Math.round(S.pop/2))&&S.bld.length)WK.push({x:S.bld[0].x,y:S.bld[0].y,tx:0,ty:0});while(WK.length>Math.round(S.pop/2))WK.pop();
+ if(mode&&ghost)rangeFx(ghost[0],ghost[1],mode);else if(sel&&!mode)rangeFx(sel.x,sel.y,sel.id);wat(t);while(WK.length<Math.min(14,Math.round(S.pop/2))&&S.bld.length)WK.push({x:S.bld[0].x,y:S.bld[0].y,tx:0,ty:0});while(WK.length>Math.round(S.pop/2))WK.pop();
  const tg=S.bld.filter(b=>!b.t&&!B[b.id].flat);
  for(const w of WK){const d=Math.hypot(w.tx-w.x,w.ty-w.y);if(d<.1&&tg.length){const b=tg[Math.random()*tg.length|0];w.tx=b.x+(Math.random()-.5)*.6;w.ty=b.y+.6}else if(d>=.1){w.x+=(w.tx-w.x)/d*.8*dt;w.y+=(w.ty-w.y)/d*.8*dt}}
  const ws=WK.slice().sort((a,b)=>a.x+a.y-b.x-b.y);let wi=0;
