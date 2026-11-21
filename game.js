@@ -1,6 +1,6 @@
 'use strict';
 const N=24,$=i=>document.getElementById(i),R=['food','wood','stone','tools','coins'],
-RI={food:'🌾',wood:'🪵',stone:'🪨',tools:'🔧',coins:'🪙'},RN={food:'Nahrung',wood:'Holz',stone:'Stein',tools:'Werkzeuge',coins:'Münzen'},ST=['','Dorf','Marktflecken','Stadt'];
+RI={food:'🌾',wood:'🪵',stone:'🪨',tools:'🔧',coins:'🪙'},RN={food:'Nahrung',wood:'Holz',stone:'Stein',tools:'Werkzeuge',coins:'Münzen'},ST=['','Siedlung','Dorf','Stadt'];
 const B={
 road:{n:'Weg',i:'🛤️',c:{coins:1,stone:1},st:1,t:0,flat:1,sat:.3,d:'Befestigter Weg, macht den Ort ansehnlicher.'},
 well:{n:'Brunnen',i:'⛲',c:{stone:8,coins:5},st:1,t:1,h:10,rh:10,s:.5,w:'#9a9a9a',r:'#7a5a35',sat:8,rad:3,d:'Versorgt Wohnhäuser im Umkreis von 3 Feldern.'},
@@ -21,7 +21,7 @@ burgher:{n:'Bürgerhaus',i:'🏛️',c:{wood:20,stone:15,coins:20},st:3,t:3,h:32
 };
 const hs=(x,y)=>((x*73856093^y*19349663)>>>0)%100/100,cl=(v,a,b)=>Math.max(a,Math.min(b,v)),cost=c=>Object.keys(c).map(k=>RI[k]+c[k]).join(' '),
 rnd=a=>()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
-let shoreC=null,battle=null,zsel=null,S,og=new Map,cam={x:0,y:0,z:.8},mode=null,ghost=null,sel=null,W,H,dpr,opt={sound:1,music:1},WK=[],last=0,toastT,cv=$('c'),g=cv.getContext('2d');
+let vg=null,shoreC=null,battle=null,zsel=null,S,og=new Map,cam={x:0,y:0,z:.8},mode=null,ghost=null,sel=null,W,H,dpr,opt={sound:1,music:1},WK=[],last=0,toastT,cv=$('c'),g=cv.getContext('2d');
 const at=(x,y)=>og.get(y*N+x),idx=()=>{og=new Map;S.bld.forEach(b=>og.set(b.y*N+b.x,b))};
 function genMap(){const r=rnd((Math.random()*1e9)|0),p=Array.from({length:8},()=>r()*6),n=(x,y,o)=>Math.sin(x*.45+p[o])+Math.sin(y*.4+p[o+1])+Math.sin((x+y)*.28+p[o+2])+Math.sin((x-y)*.5+p[o+3]),m=[];
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){let t=0;if(n(x,y,0)>1.2)t=1;else if(n(x,y,4)>2.1)t=3;
@@ -72,7 +72,9 @@ const SC={coins:15,food:6},TRD='Handel:<br>'+[['wood','🪙20 → 🪵10'],['sto
 function scoutable(i){const x=i%3,y=i/3|0;return!S.exp[i]&&!S.scout&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=x+a,Y=y+b;return X>=0&&X<3&&Y>=0&&Y<3&&S.exp[Y*3+X]})}
 function scoutZone(i){if(!scoutable(i))return toast('Hier ist keine Erkundung möglich.');for(const k in SC)if(S.res[k]<SC[k])return toast('Zu wenig '+RN[k]);for(const k in SC)S.res[k]-=SC[k];S.scout={z:i,left:1};zsel=null;sfx('click');toast('Der Erkundungstrupp ist unterwegs.');after()}
 function trade(k){const t={wood:[20,10],stone:[24,10],food:[15,10],tools:[30,5]}[k];if(S.res.coins>=t[0]){S.res.coins-=t[0];S.res[k]=Math.min(stats(S).cap,S.res[k]+t[1]);sfx('click');after()}else toast('Zu wenig Münzen.')}
-function fog(){const z=cam.z;for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(S.exp[zoneOf(x,y)])continue;const[cx,cy]=P(x,y);if(cx<-40*z||cx>W+40*z||cy<-30*z||cy>H+30*z)continue;dia(cx,cy,1.04,`hsl(98,14%,${24+hs(x,y)*5}%)`)}}
+const WC=Array.from({length:8},(_,i)=>`hsl(205,45%,${44+i*.9}%)`),TC={};
+function tcol(m,x,y){const k=m*1e4+y*N+x,h=hs(x,y);return TC[k]||(TC[k]=m==9?`hsl(98,14%,${24+h*5}%)`:m==1?`hsl(100,30%,${30+h*6}%)`:m==3?`hsl(40,12%,${52+h*8}%)`:`hsl(${82+h*12},34%,${44+h*7}%)`)}
+function fog(){const z=cam.z;for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(S.exp[zoneOf(x,y)])continue;const[cx,cy]=P(x,y);if(cx<-40*z||cx>W+40*z||cy<-30*z||cy>H+30*z)continue;dia(cx,cy,1.04,tcol(9,x,y))}}
 const zoneOf=(x,y)=>(y>>3)*3+(x>>3);
 function zinfo(i){const n=S.zones.filter(Boolean).length,c={coins:30*n,wood:15*n,stone:10*n},zx=i%3,zy=i/3|0,
  adj=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=zx+a,Y=zy+b;return X>=0&&X<3&&Y>=0&&Y<3&&S.zones[Y*3+X]}),need=n>=6?3:n>=3?2:1;let w='';
@@ -125,6 +127,7 @@ cv.onpointermove=e=>{const p=ptr.get(e.pointerId);if(!p)return;
  if(ptr.size==1){cam.x+=e.clientX-p.x;cam.y+=e.clientY-p.y;moved+=Math.abs(e.clientX-p.x)+Math.abs(e.clientY-p.y);p.x=e.clientX;p.y=e.clientY;clamp()}
  else if(ptr.size==2){const a=[...ptr.values()],d0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);p.x=e.clientX;p.y=e.clientY;const d1=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(d0>10)zoomAt((a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2,d1/d0)}};
 cv.onpointerup=cv.onpointercancel=e=>{const had=ptr.delete(e.pointerId);if(had&&e.type=='pointerup'&&!multi&&moved<10)tap(e.clientX,e.clientY)};
+cv.onlostpointercapture=e=>ptr.delete(e.pointerId);
 function tap(px,py){let[x,y]=pick(px,py);if(mode&&ghost&&rectHit(px,py,ghost[0],ghost[1],B[mode]))[x,y]=ghost;
  if(mode){if(ghost&&ghost[0]==x&&ghost[1]==y&&!why(mode,x,y))build(mode,x,y);else{ghost=[x,y];info();const w=why(mode,x,y);if(w)toast(w)}}
  else{const b=hitB(px,py)||at(x,y);sel=b||null;zsel=!b&&x>=0&&y>=0&&x<N&&y<N&&!S.zones[zoneOf(x,y)]?zoneOf(x,y):null;sfx('click',.3);info()}}
@@ -167,10 +170,10 @@ function box(cx,cy,d,a){const z=cam.z;g.globalAlpha=a;if(d.flat){dia(cx,cy,.95,'
  poly([[cx-hw,cy-h],[cx,cy+hh-h],[cx,cy-h-rh]],d.r);poly([[cx,cy+hh-h],[cx+hw,cy-h],[cx,cy-h-rh]],d.r);poly([[cx,cy+hh-h],[cx+hw,cy-h],[cx,cy-h-rh]],'rgba(0,0,0,.18)');
  g.globalAlpha=1;g.font=14*z+'px serif';g.textAlign='center';g.fillText(d.i,cx,cy-h-rh-4*z)}
 function drawB(b,cx,cy){const d=B[b.id],c=SPR[b.id];if(c){spr(c,cx,cy,b.t>0||b.dmg?.55:1);g.textAlign='center';g.font=16*cam.z+'px serif';if(b.t>0)g.fillText('🔨',cx,cy-30*cam.z);if(b.dmg)g.fillText('🔥',cx,cy-34*cam.z);if(!b.t&&!b.dmg)fx(b,cx,cy);return}box(cx,cy,d,b.t>0||b.dmg?.55:1);if(b.dmg){g.font=16*cam.z+'px serif';g.textAlign='center';g.fillText('🔥',cx,cy-34*cam.z)}if(b.t>0&&!d.flat){g.font=16*cam.z+'px serif';g.textAlign='center';g.fillText('🔨',cx,cy-30*cam.z)}}
-function draw(ts){const z=cam.z,t=ts/1000,dt=Math.min(.1,(ts-last)/1000);last=ts;g.setTransform(dpr,0,0,dpr,0,0);g.fillStyle='#bcd09a';g.fillRect(0,0,W,H);
+function draw(ts){if(!ptr.size&&ts-last<30){requestAnimationFrame(draw);return}const z=cam.z,t=ts/1000,dt=Math.min(.1,(ts-last)/1000);last=ts;g.setTransform(dpr,0,0,dpr,0,0);g.fillStyle='#bcd09a';g.fillRect(0,0,W,H);
  const vis=(cx,cy)=>cx>-50*z&&cx<W+50*z&&cy>-70*z&&cy<H+60*z;
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){const[cx,cy]=P(x,y);if(!vis(cx,cy))continue;const m=S.map[y*N+x],h=hs(x,y);
-  dia(cx,cy,1.03,m==2?`hsl(205,45%,${47+3*Math.sin(t*1.5+x+y)}%)`:m==1?`hsl(100,30%,${30+h*6}%)`:m==3?`hsl(40,12%,${52+h*8}%)`:`hsl(${82+h*12},34%,${44+h*7}%)`);gd(x,y,m,h,cx,cy);if(!S.zones[zoneOf(x,y)])dia(cx,cy,1.03,'rgba(25,35,25,.5)')}
+  dia(cx,cy,1.03,m==2?WC[(Math.sin(t*1.5+x+y)+1)*3.99|0]:tcol(m,x,y));gd(x,y,m,h,cx,cy);if(!S.zones[zoneOf(x,y)])dia(cx,cy,1.03,'rgba(25,35,25,.5)')}
  if(mode&&ghost)rangeFx(ghost[0],ghost[1],mode);else if(sel&&!mode)rangeFx(sel.x,sel.y,sel.id);wat(t);fog();while(WK.length<Math.min(14,Math.round(S.pop/2))&&S.bld.length)WK.push({x:S.bld[0].x,y:S.bld[0].y,tx:0,ty:0});while(WK.length>Math.round(S.pop/2))WK.pop();
  const tg=S.bld.filter(b=>!b.t&&!B[b.id].flat&&!B[b.id].water);
  for(const w of WK){const d=Math.hypot(w.tx-w.x,w.ty-w.y);if(d<.1&&tg.length){const b=tg[Math.random()*tg.length|0];w.tx=b.x+(Math.random()-.5)*.6;w.ty=b.y+.6}else if(d>=.1){w.x+=(w.tx-w.x)/d*.8*dt;w.y+=(w.ty-w.y)/d*.8*dt}}
@@ -181,19 +184,22 @@ function draw(ts){const z=cam.z,t=ts/1000,dt=Math.min(.1,(ts-last)/1000);last=ts
   while(wi<ws.length&&ws[wi].x+ws[wi].y<s+1){const w=ws[wi++],[px,py]=P(w.x,w.y);{const c=SPR['v'+(wi%4)];if(c)g.drawImage(c,px-5*z,py-19*z-Math.abs(Math.sin(t*8+wi))*1.5*z,10*z,20*z)}}}
  if(mode&&ghost){const[cx,cy]=P(ghost[0],ghost[1]),ok=!why(mode,ghost[0],ghost[1]);dia(cx,cy,1,ok?'rgba(80,220,90,.5)':'rgba(230,60,50,.55)');SPR[mode]?spr(SPR[mode],cx,cy,.65):box(cx,cy,B[mode],.65)}
  if(sel&&!mode){const[cx,cy]=P(sel.x,sel.y);dp(cx,cy,1.05);g.strokeStyle='#e0b048';g.lineWidth=3;g.stroke()}
- {const gr=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);gr.addColorStop(0,'rgba(255,210,140,0)');gr.addColorStop(1,'rgba(30,20,10,.28)');g.fillStyle=gr;g.fillRect(0,0,W,H)}
+ {if(!vg||vg.w!=W||vg.h!=H){const gr=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);gr.addColorStop(0,'rgba(255,210,140,0)');gr.addColorStop(1,'rgba(30,20,10,.28)');vg={g:gr,w:W,h:H}}g.fillStyle=vg.g;g.fillRect(0,0,W,H)}
  if(!S.peace&&S.exp[0]){const[px,py]=P(S.camp.x,S.camp.y);g.globalAlpha=1;if(SPR.camp)spr(SPR.camp,px,py,1);g.font=26*z+'px serif';g.textAlign='center';if(S.raid)g.fillText('⚔️'+S.raid.left,px,py-50*z)}
  if(battle){battle.t+=dt/4;const n=Math.min(10,3+battle.r.cnt);for(let i=0;i<n;i++){const u=cl(battle.t*1.2-i*.03,0,1),[px,py]=P(S.camp.x+(10-S.camp.x)*u+(i%3)*.3,S.camp.y+(10-S.camp.y)*u+(i/3|0)*.3);{const c=SPR.raider;if(c)g.drawImage(c,px-6*z,py-22*z,12*z,24*z)}}
   if(battle.t>=1.2){const r=battle.r;battle=null;dlg(`<h2>${r.win?'🛡️ Angriff abgewehrt':'🔥 Stadt geplündert'}</h2><p>${r.txt}</p>`);ui()}}
  for(let i=0;i<9;i++)if(!S.zones[i]){const[px,py]=P((i%3)*8+4,(i/3|0)*8+4);g.globalAlpha=1;g.font=28*z+'px serif';g.textAlign='center';g.fillText(S.scout&&S.scout.z==i?'🧭':!S.exp[i]?(scoutable(i)?'🔭':'❓'):zinfo(i).w.startsWith('Nur')?'🔒':'🗝️',px,py)}
  requestAnimationFrame(draw)}
 // ---- Audio (Dateien in sound-*.wav, austauschbar) ----
-const A={on:0};
-function sfx(n,v=.5){if(!opt.sound||!A.on)return;const a=new Audio('sound-'+n+'.wav');a.volume=v;a.play().catch(()=>{})}
-function amb(){if(!A.on)return;if(!A.w){A.w=new Audio('sound-wind.wav');A.w.loop=true;A.w.volume=.3;setInterval(()=>{if(opt.music&&Math.random()<.6){const b=new Audio('sound-bird.wav');b.volume=.25;b.play().catch(()=>{})}},9000)}opt.music?A.w.play().catch(()=>{}):A.w.pause()}
-function unlock(){if(!A.on){A.on=1;amb()}}
+const A={on:0,buf:{},ac:null};
+function play(n,v,loop){const b=A.buf[n];if(!b||!A.ac)return null;const o=A.ac.createBufferSource(),q=A.ac.createGain();o.buffer=b;o.loop=!!loop;q.gain.value=v;o.connect(q);q.connect(A.ac.destination);o.start();return o}
+function sfx(n,v=.5){if(opt.sound&&A.on)play(n,v)}
+function amb(){if(!A.on)return;if(opt.music){if(!A.w)A.w=play('wind',.3,1);if(!A.bt)A.bt=setInterval(()=>{if(opt.music&&Math.random()<.6)play('bird',.25)},9000)}else if(A.w){try{A.w.stop()}catch(e){}A.w=null}}
+function unlock(){if(A.on){if(A.ac&&A.ac.state!='running')A.ac.resume();return}A.on=1;try{A.ac=new(window.AudioContext||window.webkitAudioContext)();A.ac.resume();
+ ['wind','bird','click','build','bell'].forEach(n=>fetch('sound-'+n+'.wav').then(r=>r.arrayBuffer()).then(b=>A.ac.decodeAudioData(b)).then(d=>{A.buf[n]=d;if(n=='wind')amb()}).catch(()=>{}))}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&A.ac&&A.ac.state!='running')A.ac.resume()});
 // ---- Speicher (IndexedDB, atomare Transaktion, Versionsfeld) ----
-const DB=()=>new Promise((ok,no)=>{const r=indexedDB.open('meridian',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+let dbp;const DB=()=>dbp||(dbp=new Promise((ok,no)=>{const r=indexedDB.open('meridian',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{r.result.onversionchange=()=>{r.result.close();dbp=null};ok(r.result)};r.onerror=()=>{dbp=null;no(r.error)}}));
 const put=async(k,v)=>{const d=await DB();return new Promise((ok,no)=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=ok;t.onerror=t.onabort=()=>no(t.error)})};
 const get=async k=>{const d=await DB();return new Promise((ok,no)=>{const r=d.transaction('kv').objectStore('kv').get(k);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})};
 let sT;function save(){clearTimeout(sT);sT=setTimeout(()=>put('save',{v:4,S,opt}).catch(()=>toast('Speichern fehlgeschlagen.')),400)}
