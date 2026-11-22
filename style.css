@@ -21,3 +21,6 @@ button{font:inherit;color:inherit;border:0;cursor:pointer}
 .bx{background:#f4ecd8;color:#2a2418;border-radius:16px;padding:16px;max-width:420px;width:100%;max-height:85vh;overflow:auto}
 .bx h2,.bx h3{margin:.2em 0}.bx button{display:block;width:100%;min-height:46px;margin:6px 0;border-radius:10px;background:#2f4a2a;color:#fff}.lg{font-size:13px}
 #rd{width:60px;background:#7a3b2a;font-size:20px}
+#info{position:relative;padding-right:48px}#info button.x{position:absolute;top:8px;right:8px;width:34px;height:34px;min-height:0;margin:0;padding:0;border-radius:50%;background:#7a3b2a;color:#fff;font-size:15px}
+#tabs{display:flex;gap:5px;margin-bottom:6px}#tabs button{flex:1;min-height:38px;border-radius:10px;background:#1f331c;font-size:12px;font-weight:700;padding:0 2px}#tabs .on{background:var(--g);color:#2a2418}
+.b .r{color:#ff9a8a}.b.no{opacity:.8}#wn{width:60px;background:#b8862a;font-size:17px}
