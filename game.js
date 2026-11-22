@@ -67,7 +67,7 @@ function raidDlg(){const r=S.raid;dlg(`<h2>⚔️ Sicherheit</h2><p>Verteidigung
 function expedition(){if(!S.exp[S.cz])return;const need=rstr(S)*2.5,pw=dfn(S,1);if(S.res.coins<40||S.res.tools<10)return toast('Benötigt 🔧10 und 🪙40.');S.res.coins-=40;S.res.tools-=10;$('dlg').hidden=true;const win=pw>=need*(.8+Math.random()*.4);
  if(win){S.peace=20;S.raid=null;S.log.unshift('Das Raubritterlager wurde zerschlagen.')}else{S.sat=Math.max(0,S.sat-5);S.log.unshift('Die Expedition scheiterte.')}
  battle={t:0,sp:'ally',src:[townC()],dst:S.camp,r:{cnt:4,title:win?'⚔️ Lager zerschlagen':'Expedition gescheitert',txt:win?'Deine Wachen haben das Lager zerstört. Eine Weile herrscht Frieden.':'Deine Wachen waren zu schwach. Baue mehr Wachhäuser.'}};after()}
-$('rd').onclick=raidDlg;$('al').onclick=raidDlg;$('wn').onclick=()=>dlg('<h2>⚠ Aufgaben</h2>'+S.bld.filter(b=>b.pr).map(b=>`<button data-a="go:${S.bld.indexOf(b)}">${B[b.id].i} ${B[b.id].n}: ${b.dmg?'beschädigt':'keine Vorkommen mehr'}</button>`).join(''));
+$('rd').onclick=raidDlg;$('wn').onclick=()=>dlg('<h2>⚠ Aufgaben</h2>'+S.bld.filter(b=>b.pr).map(b=>`<button data-a="go:${S.bld.indexOf(b)}">${B[b.id].i} ${B[b.id].n}: ${b.dmg?'beschädigt':'keine Vorkommen mehr'}</button>`).join(''));
 const SC={coins:15,food:6},TRD='Handel:<br>'+[['wood','🪙20 → 🪵10'],['stone','🪙24 → 🪨10'],['food','🪙15 → 🌾10'],['tools','🪙30 → 🔧5']].map(([k,l])=>`<button data-a="tr:${k}" style="background:#2f4a2a">${l}</button>`).join('')+'<br>';
 function scoutable(i){const x=i%3,y=i/3|0;return!S.exp[i]&&!S.scout&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=x+a,Y=y+b;return X>=0&&X<3&&Y>=0&&Y<3&&S.exp[Y*3+X]})}
 function scoutZone(i){if(!scoutable(i))return toast('Hier ist keine Erkundung möglich.');for(const k in SC)if(S.res[k]<SC[k])return toast('Zu wenig '+RN[k]);for(const k in SC)S.res[k]-=SC[k];S.scout={z:i,left:1};zsel=null;sfx('click');toast('Der Erkundungstrupp ist unterwegs.');after()}
@@ -93,7 +93,7 @@ function toast(t){const m=$('msg');m.textContent=t;m.hidden=false;clearTimeout(t
 function ui(){const k=stats(S),c=JSON.parse(JSON.stringify(S));step(c,1);
  $('top').innerHTML=R.map(x=>{const d=Math.round((c.res[x]-S.res[x])*10)/10;return`<div class=ch>${RI[x]} ${Math.floor(S.res[x])}<i class="${d>=0?'up':'dn'}">${d>=0?'+':''}${d}</i></div>`}).join('')+
  `<div class=ch>👥 ${S.pop}/${k.home}<i>Arbeit ${Math.min(S.pop,k.jobs)}/${k.jobs}</i></div><div class=ch>😊 ${Math.round(S.sat)}%</div><div class=ch>🛡️ ${Math.round(dfn(S))}${S.raid?'<i>⚔️ '+Math.round(S.raid.str)+' in '+S.raid.left+'</i>':''}</div><div class=ch>🏘️ ${ST[S.stage]}<i>Ziel ${S.pop}/100</i></div>`;
- S.bld.forEach(b=>b.pr=!b.t&&(b.dmg||(B[b.id].need&&!tilesNear(S,b.x,b.y,B[b.id].need).length)));const np=S.bld.filter(b=>b.pr).length;$('wn').hidden=!np;$('wn').textContent='⚠ '+np;$('al').hidden=!S.raid;if(S.raid)$('al').textContent='⚔️ Räuber in '+S.raid.left+' Periode(n) · Stärke ca. '+Math.round(S.raid.str)+' – tippen';$('rd').textContent='⚔️'+(S.raid?' '+S.raid.left:'');$('nx').textContent='▶ Periode '+S.turn+' beenden';bar();info()}
+ S.bld.forEach(b=>b.pr=!b.t&&(b.dmg||(B[b.id].need&&!tilesNear(S,b.x,b.y,B[b.id].need).length)));const np=S.bld.filter(b=>b.pr).length;$('wn').hidden=!np;$('wn').textContent='⚠ '+np;$('rd').textContent='⚔️'+(S.raid?' '+S.raid.left:'');$('nx').textContent='▶ Periode '+S.turn+' beenden';bar();info()}
 const CAT={'Wohnen':['house','burgher','well'],'Versorgung':['farm','fish','mill','bakery'],'Produktion':['wood','quarry','smith'],'Handel':['road','market','store'],'Militär':['tower','guard','wall']};let tab='Wohnen';
 function bar(){$('tabs').innerHTML=Object.keys(CAT).map(k=>`<button data-t="${k}" class="${k==tab?'on':''}">${k}</button>`).join('');
  $('bl').innerHTML=CAT[tab].map(id=>{const d=B[id],lk=d.st>S.stage,no=!lk&&Object.keys(d.c).some(k=>S.res[k]<d.c[k]);return`<button class="b${lk?' lk':''}${no?' no':''}${mode==id?' on':''}" data-id="${id}">${lk?'🔒':d.i}<small>${d.n}</small><small>${Object.keys(d.c).map(k=>`<span class="${S.res[k]<d.c[k]?'r':''}">${RI[k]}${d.c[k]}</span>`).join(' ')}</small></button>`}).join('')}
@@ -163,7 +163,11 @@ function rinfo(id,x,y){const d=B[id];if(d.fw||d.prot){const r=d.fw?2:d.prot;let 
 function townC(){let a=0,b=0;S.bld.forEach(o=>{a+=o.x;b+=o.y});const n=S.bld.length||1;return{x:a/n,y:b/n}}
 function EDGES(st){const k=1+(st>8)+(st>16);return[0,1,2,3].sort(()=>Math.random()-.5).slice(0,k).map(e=>{const p=Math.random()*(N-1)|0;return[{x:p,y:0},{x:p,y:N-1},{x:0,y:p},{x:N-1,y:p}][e]})}
 function rectHit(px,py,x,y,d){const z=cam.z,[cx,cy]=P(x,y),top=d.flat?16:d.h+(d.rh||0)+10;return Math.abs(px-cx)<=26*z*(d.s||1)+4*z&&py>=cy-top*z&&py<=cy+14*z}
-function hitB(px,py){let best=null;for(const b of S.bld)if(rectHit(px,py,b.x,b.y,B[b.id])&&(!best||b.x+b.y>best.x+best.y))best=b;return best}
+function hitB(px,py){const z=cam.z;let best=null;for(const b of S.bld){const c=SPR[b.id];let hit=0;
+  if(!c)hit=rectHit(px,py,b.x,b.y,B[b.id]);
+  else{const[cx,cy]=P(b.x,b.y),u=((px-(cx-40*z))/z*c.width/80)|0,v=((py-(cy-84*z))/z*c.height/110)|0;
+   if(u>=0&&v>=0&&u<c.width&&v<c.height){try{hit=c.getContext('2d').getImageData(u,v,1,1).data[3]>30}catch(e){hit=rectHit(px,py,b.x,b.y,B[b.id])}}}
+  if(hit&&(!best||b.x+b.y>best.x+best.y))best=b}return best}
 function wat(t){const z=cam.z,E=[[1,0,32,0,0,16],[0,1,0,16,-32,0],[-1,0,-32,0,0,-16],[0,-1,0,-16,32,0]];g.lineCap='round';
  for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(S.map[y*N+x]!=2)continue;const[cx,cy]=P(x,y);if(cx<-40*z||cx>W+40*z||cy<-30*z||cy>H+30*z)continue;
   const o=Math.sin(t*1.2+x*2+y)*4*z;g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1.2*z;g.beginPath();g.moveTo(cx-8*z+o,cy-2*z);g.lineTo(cx+2*z+o,cy-2*z);g.moveTo(cx-2*z-o,cy+5*z);g.lineTo(cx+8*z-o,cy+5*z);g.stroke();
