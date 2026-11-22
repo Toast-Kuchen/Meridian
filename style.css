@@ -24,3 +24,4 @@ button{font:inherit;color:inherit;border:0;cursor:pointer}
 #info{position:relative;padding-right:48px}#info button.x{position:absolute;top:8px;right:8px;width:34px;height:34px;min-height:0;margin:0;padding:0;border-radius:50%;background:#7a3b2a;color:#fff;font-size:15px}
 #tabs{display:flex;gap:5px;margin-bottom:6px}#tabs button{flex:1;min-height:38px;border-radius:10px;background:#1f331c;font-size:12px;font-weight:700;padding:0 2px}#tabs .on{background:var(--g);color:#2a2418}
 .b .r{color:#ff9a8a}.b.no{opacity:.8}#wn{width:60px;background:#b8862a;font-size:17px}
+#al{background:#8a2a1c;color:#fff;border-radius:12px;padding:9px 12px;margin-bottom:6px;font-weight:700;font-size:14px}
