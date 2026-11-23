@@ -2,7 +2,7 @@
 const N=48,$=i=>document.getElementById(i),R=['food','wood','stone','tools','coins'],
 RI={food:'🌾',wood:'🪵',stone:'🪨',tools:'🔧',coins:'🪙'},RN={food:'Nahrung',wood:'Holz',stone:'Stein',tools:'Werkzeuge',coins:'Münzen'},ST=['','Siedlung','Dorf','Stadt'];
 const B={
-road:{n:'Weg',i:'🛤️',c:{coins:1,stone:1},st:1,t:0,flat:1,sz:1,sat:.3,d:'Befestigter Weg, macht den Ort ansehnlicher.'},
+road:{n:'Weg',i:'🛤️',c:{coins:1},st:1,t:0,flat:1,sz:1,d:'Befestigter Weg, macht den Ort ansehnlicher.'},
 well:{n:'Brunnen',i:'⛲',c:{stone:8,coins:5},st:1,t:1,h:10,rh:10,s:.5,sz:1,w:'#9a9a9a',r:'#7a5a35',sat:8,rad:6,d:'Versorgt Wohnhäuser im Umkreis von 3 Feldern.'},
 house:{n:'Wohnhaus',i:'🏠',c:{wood:10,coins:5},st:1,t:1,h:20,w:'#dcc9a2',r:'#b04a32',home:4,d:'Fachwerkhaus für 4 Bewohner.'},
 farm:{n:'Bauernhof',i:'🌾',c:{wood:15,coins:10},st:1,t:1,h:16,rh:10,w:'#c9a66b',r:'#7a5a35',job:3,prod:{food:8},d:'Baut Getreide an und ernährt die Siedlung.'},
@@ -117,7 +117,8 @@ function bar(){$('tabs').innerHTML=Object.keys(CAT).map(k=>`<button data-t="${k}
 $('tabs').onclick=e=>{const k=e.target.dataset.t;if(k){tab=k;bar()}};
 const eff=d=>(d.home?'🏠 '+d.home+' Plätze · ':'')+(d.job?'👷 '+d.job+' Jobs · ':'')+(d.use?'Verbraucht '+cost(d.use)+' · ':'')+(d.prod?'Erzeugt '+cost(d.prod)+' · ':'')+(d.sat?'😊 +'+d.sat+' · ':'')+(d.cap?'📦 +'+d.cap+' · ':'')+(d.def?'🛡️ +'+d.def+' · ':'');
 function info(){const e=$('info');let h='';
- if(mode){const d=B[mode],w=ghost?why(mode,ghost[0],ghost[1]):'';h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>Kosten ${cost(d.c)} · Bau ${d.t} Periode(n)<br>${eff(d)}<br>${ghost?rinfo(mode,ghost[0],ghost[1]):''}${ghost&&mode!='road'&&mode!='store'&&!conn1(ghost[0],ghost[1],szd(B[mode]))?'⚠ Noch ohne Straßenanbindung<br>':''}${ghost?(w?'⛔ '+w:'✅ Nochmal tippen zum Bauen'):''}`}
+ if(mode=='road')h=roadPanel();
+ else if(mode){const d=B[mode],w=ghost?why(mode,ghost[0],ghost[1]):'';h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>Kosten ${cost(d.c)} · Bau ${d.t} Periode(n)<br>${eff(d)}<br>${ghost?rinfo(mode,ghost[0],ghost[1]):''}${ghost&&mode!='road'&&mode!='store'&&!conn1(ghost[0],ghost[1],szd(B[mode]))?'⚠ Noch ohne Straßenanbindung<br>':''}${ghost?(w?'⛔ '+w:'✅ Passt – oder tippe ein anderes Feld'):''}<br>${ghost&&!w?'<button data-a="ok" style="background:#2f6a2a">✔ Hier bauen</button>':''}`}
  else if(zsel!=null&&!S.exp[zsel]){const ok=scoutable(zsel);h=`<b>🔭 Unerforschtes Gebiet</b><br>${S.scout?'Ein Trupp ist bereits unterwegs.':ok?'Ein Erkundungstrupp deckt es in 1 Periode auf. Kosten '+cost(SC):'Nur an erkundete Gebiete angrenzende Gebiete lassen sich erkunden.'}<br>${ok?'<button data-a="sc">Trupp entsenden</button>':''}`}
  else if(zsel!=null){const z=zinfo(zsel);h=`<b>🗝️ Neues Baugebiet</b><br>Kosten ${cost(z.c)}<br>${z.w?'⛔ '+z.w:'✅ Erschließbar'}<br><button data-a="bz">Erschließen</button>`}
  else if(sel){const d=B[sel.id];h=`<b>${d.i} ${d.n}</b> – ${d.d}<br>${eff(d)}<br>${rinfo(sel.id,sel.x,sel.y)}Status: ${sel.dmg?'🔥 Beschädigt'+(d.home?' (Wohnraum fällt aus)':' (Produktion steht still)'):sel.t>0?'Im Bau, noch '+sel.t+' Periode(n)':'in Betrieb'}<br>${sel.id=='house'&&!sel.t?hinfo(sel):''}${sel.id=='market'&&!sel.t&&!sel.dmg?TRD:''}${sel.dmg?'<button data-a="rp" style="background:#2f4a2a">Reparieren (🪙5)</button>':''}<button data-a="dm">Abreißen (50% Rückerstattung)</button>`}
@@ -133,8 +134,8 @@ $('dlg').onclick=e=>{const a=e.target.dataset.a;if(!a)return;if(a=='cl'){$('dlg'
  else if(a=='tx'){S.tax=((S.tax==null?1:S.tax)+1)%3;after();menu()}else if(a=='so'){opt.sound^=1;save();menu()}else if(a=='mu'){opt.music^=1;amb();save();menu()}else if(a.startsWith('ev:')){if(a=='ev:t'){if(S.res.coins>=10){S.res.coins-=10;S.res.wood+=15}else toast('Zu wenig Münzen.')}else if(a=='ev:f'){if(S.res.food>=5&&S.pop<stats(S).home){S.res.food-=5;S.pop++}else toast('Nicht möglich: Nahrung oder Wohnraum fehlt.')}$('dlg').hidden=true;if(dq.length)dlg(dq.shift());after()}
  else if(a.startsWith('go:')){const b=S.bld[+a.slice(3)];if(b){$('dlg').hidden=true;sel=b;mode=ghost=zsel=null;centerOn(b.x,b.y);info()}}else if(a=='hp')dlg(HELP);else if(a=='mc'){if(S.raid&&S.res.coins>=40){S.res.coins-=40;S.raid.merc+=6;sfx('click');after();raidDlg()}else toast('Zu wenig Münzen.')}
  else if(a=='tb'&&S.raid){const c=Math.round(S.raid.str*8);if(S.res.coins>=c){S.res.coins-=c;S.raid=null;S.log.unshift('Tribut gezahlt, die Räuber ziehen ab.');after();raidDlg()}else toast('Zu wenig Münzen.')}else if(a=='ex')expedition();else if(a.startsWith('tr:')){const k=a.slice(3),t={wood:[20,10],stone:[24,10],food:[15,10],tools:[30,5]}[k];if(S.res.coins>=t[0]){S.res.coins-=t[0];S.res[k]+=t[1];sfx('click');after();menu()}else toast('Zu wenig Münzen.')}};
-$('info').onclick=e=>{const a=e.target.dataset.a;if(a=='x')mode=ghost=sel=zsel=null;else if(a&&a.startsWith('tr:'))trade(a.slice(3));else if(a=='sc'&&zsel!=null)scoutZone(zsel);else if(a=='bz'&&zsel!=null)buyZone(zsel);else if(a=='dm'&&sel)demolish(sel);else if(a=='up'&&sel)upgrade(sel);else if(a=='rp'&&sel&&sel.dmg&&S.res.coins>=5){S.res.coins-=5;sel.dmg=0;sfx('build');after()}ui()};
-$('bl').onclick=e=>{const b=e.target.closest('.b');if(!b)return;const id=b.dataset.id;if(B[id].st>S.stage)return toast('Freigeschaltet ab: '+ST[B[id].st]);sfx('click');mode=mode==id?null:id;ghost=sel=zsel=null;ui()};
+$('info').onclick=e=>{const a=e.target.dataset.a;if(a=='x'){mode=ghost=sel=zsel=null;rp={a:null,b:null,f:0}}else if(a&&a.startsWith('tr:'))trade(a.slice(3));else if(a=='sc'&&zsel!=null)scoutZone(zsel);else if(a=='bz'&&zsel!=null)buyZone(zsel);else if(a=='dm'&&sel)demolish(sel);else if(a=='ok'&&mode&&ghost&&!why(mode,ghost[0],ghost[1]))build(mode,ghost[0],ghost[1]);else if(a=='rb')buildRoad();else if(a=='rf')rp.f^=1;else if(a=='rr')rp={a:null,b:null,f:0};else if(a=='up'&&sel)upgrade(sel);else if(a=='rp'&&sel&&sel.dmg&&S.res.coins>=5){S.res.coins-=5;sel.dmg=0;sfx('build');after()}ui()};
+$('bl').onclick=e=>{const b=e.target.closest('.b');if(!b)return;const id=b.dataset.id;if(B[id].st>S.stage)return toast('Freigeschaltet ab: '+ST[B[id].st]);sfx('click');mode=mode==id?null:id;ghost=sel=zsel=null;rp={a:null,b:null,f:0};ui()};
 $('nx').onclick=nextTurn;$('mn').onclick=menu;
 $('zoom').onclick=e=>{const z=e.target.dataset.z;if(z==null)return;if(z==0)centerOn(20,20);else zoomAt(W/2,H/2,z>0?1.25:.8)};
 // ---- Kamera / Eingabe ----
@@ -150,8 +151,9 @@ cv.onpointermove=e=>{const p=ptr.get(e.pointerId);if(!p)return;
  else if(ptr.size==2){const a=[...ptr.values()],d0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);p.x=e.clientX;p.y=e.clientY;const d1=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(d0>10)zoomAt((a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2,d1/d0)}};
 cv.onpointerup=cv.onpointercancel=e=>{const had=ptr.delete(e.pointerId);if(had&&e.type=='pointerup'&&!multi&&moved<10)tap(e.clientX,e.clientY)};
 cv.onlostpointercapture=e=>ptr.delete(e.pointerId);
-function tap(px,py){let[x,y]=pick(px,mode&&szd(B[mode])==2?py-8*cam.z:py);if(mode&&ghost&&rectHit(px,py,ghost[0],ghost[1],B[mode]))[x,y]=ghost;
- if(mode){if(ghost&&ghost[0]==x&&ghost[1]==y&&!why(mode,x,y))build(mode,x,y);else{ghost=[x,y];info();const w=why(mode,x,y);if(w)toast(w)}}
+function tap(px,py){let[x,y]=pick(px,mode&&szd(B[mode])==2?py-8*cam.z:py);
+ if(mode=='road'){if(!rp.a)rp.a=[x,y];else rp.b=[x,y];info()}
+ else if(mode){if(ghost&&ghost[0]==x&&ghost[1]==y&&!why(mode,x,y))build(mode,x,y);else{ghost=[x,y];info();const w=why(mode,x,y);if(w)toast(w)}}
  else{const b=hitB(px,py)||at(x,y);sel=b||null;zsel=!b&&x>=0&&y>=0&&x<N&&y<N&&!S.zones[zoneOf(x,y)]?zoneOf(x,y):null;sfx('click',.3);info()}}
 document.addEventListener('gesturestart',e=>e.preventDefault());
 function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr}
@@ -186,6 +188,13 @@ function hinfo(b){const n=hneeds(b),lv=b.lv||1;return`Stufe ${lv}: ${['Wohnhaus'
 function upgrade(b){const lv=b.lv||1,n=hneeds(b);if(lv>=3)return;if(!(n.w&&n.m&&(lv==1||n.i)))return toast('Bedingungen noch nicht erfüllt.');if(S.stage<lv+1)return toast('Erst ab Stufe '+ST[lv+1]);const c=UPC[lv];for(const k in c)if(S.res[k]<c[k])return toast('Zu wenig '+RN[k]);for(const k in c)S.res[k]-=c[k];b.lv=lv+1;sfx('build');toast('Haus aufgewertet!');after()}
 const szd=d=>d.sz||2,scd=d=>d.sz==1?(d.flat?.5:.6):1;
 function cen(x,y,d){const[a,b]=P(x,y);return szd(d)==2?[a,b+8*cam.z]:[a,b]}
+let rp={a:null,b:null,f:0};
+function rpath(a,b,f){const o=[];let[x,y]=a;const sx=Math.sign(b[0]-x),sy=Math.sign(b[1]-y),H=()=>{while(x!=b[0]){o.push([x,y]);x+=sx}},V=()=>{while(y!=b[1]){o.push([x,y]);y+=sy}};f?(V(),H()):(H(),V());o.push([b[0],b[1]]);return o}
+const rcells=()=>rp.a&&rp.b?rpath(rp.a,rp.b,rp.f):rp.a?[rp.a]:[];
+function buildRoad(){let n=0;for(const[x,y]of rcells())if(!why('road',x,y)){S.res.coins-=B.road.c.coins;S.bld.push({id:'road',x,y,t:0});idx();n++}if(n){sfx('build');rp={a:null,b:null,f:0};after()}else toast('Hier kann kein Weg gebaut werden.')}
+function roadPanel(){const c=rcells(),ok=Math.min(c.filter(([x,y])=>!why('road',x,y)).length,Math.floor(S.res.coins));let t='<b>🛤️ Weg</b> – verbindet Gebäude mit dem Lagerhaus. 🪙1 je Feld.<br>';
+ t+=!rp.a?'Tippe auf den <b>Startpunkt</b>.':!rp.b?'Tippe auf den <b>Endpunkt</b>.':ok+' Felder baubar · 🪙'+ok+(c.length-ok>0?' · '+(c.length-ok)+' nicht baubar':'')+'<br>Tippe erneut, um den Endpunkt zu verschieben.';
+ return t+'<br>'+(rp.b&&ok?'<button data-a="rb" style="background:#2f6a2a">✔ Bauen</button>':'')+(rp.b?'<button data-a="rf" style="background:#2f4a2a">↻ Ecke</button>':'')+(rp.a?'<button data-a="rr" style="background:#2f4a2a">Neu</button>':'')}
 function rectHit(px,py,x,y,d){const z=cam.z*scd(d),[cx,cy]=cen(x,y,d),top=d.flat?16:d.h+(d.rh||0)+10;return Math.abs(px-cx)<=26*z*(d.s||1)+4*z&&py>=cy-top*z&&py<=cy+14*z}
 function hitB(px,py){let best=null;for(const b of S.bld){const c=SPR[sk(b)],d=B[b.id];let hit=0;
   if(!c)hit=rectHit(px,py,b.x,b.y,d);
@@ -217,6 +226,7 @@ function draw(ts){if(!ptr.size&&ts-last<30){requestAnimationFrame(draw);return}c
    g.globalAlpha=S.zones[zoneOf(x,y)]?1:.5;if(!S.exp[zoneOf(x,y)]){}else if(m==1){treeSpr(h*3|0,cx,cy+3*z,.8+h*.2);if(h>.6)treeSpr(h*7|0,cx+7*z,cy+5*z,.6)}else if(m==3){const c=SPR.rock;if(c)g.drawImage(c,cx-22*z,cy-24*z,44*z,33*z)}
    g.globalAlpha=1;if(b&&x==b.x+szd(B[b.id])-1&&y==b.y+szd(B[b.id])-1)drawB(b,cx,cy)}
   while(wi<ws.length&&ws[wi].x+ws[wi].y<s+1){const w=ws[wi++],[px,py]=P(w.x,w.y);{const c=SPR['v'+(wi%4)];if(c)g.drawImage(c,px-5*z,py-19*z-Math.abs(Math.sin(t*8+wi))*1.5*z,10*z,20*z)}}}
+ if(mode=='road'&&rp.a)for(const[x,y]of rcells()){const[cx,cy]=P(x,y),w=why('road',x,y),o=at(x,y);dia(cx,cy,1,!w?'rgba(80,220,90,.6)':w.startsWith('Zu wenig')?'rgba(240,200,60,.6)':o&&o.id=='road'?'rgba(210,210,210,.4)':'rgba(230,60,50,.6)')}
  if(mode&&ghost){const[cx,cy]=cen(ghost[0],ghost[1],B[mode]),ok=!why(mode,ghost[0],ghost[1]);dia(cx,cy,szd(B[mode]),ok?'rgba(80,220,90,.5)':'rgba(230,60,50,.55)');SPR[mode]?spr(SPR[mode],cx,cy,.65,scd(B[mode])):box(cx,cy,B[mode],.65)}
  if(sel&&!mode){const[cx,cy]=cen(sel.x,sel.y,B[sel.id]);dp(cx,cy,szd(B[sel.id])*1.05);g.strokeStyle='#e0b048';g.lineWidth=3;g.stroke()}
  {if(!vg||vg.w!=W||vg.h!=H){const gr=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);gr.addColorStop(0,'rgba(255,210,140,0)');gr.addColorStop(1,'rgba(30,20,10,.28)');vg={g:gr,w:W,h:H}}g.fillStyle=vg.g;g.fillRect(0,0,W,H)}
