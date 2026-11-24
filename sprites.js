@@ -52,6 +52,9 @@ fish:()=>`<ellipse cx="40" cy="86" rx="27" ry="10" fill="rgba(255,255,255,.25)"/
 inn:()=>base()+hut({id:'inn',w:'#e0cfae',r:'#9a3b2a',h:24,rh:14,st:'timber',door:1,chim:.4,rows:2,glow:1})+ln([62,88],[62,66],'#4a3320',1.2)+pl([[62,66],[72,69],[62,74]],'#c8902a'),
 hosp:()=>base()+hut({id:'hosp',w:'#e9e4d6',r:'#4a7a9a',h:26,rh:14,st:'stone',door:1,rows:2})+pl([[56,70],[60,70],[60,74],[64,74],[64,78],[60,78],[60,82],[56,82],[56,78],[52,78],[52,74],[56,74]],'#c0392b'),
 town:()=>base()+hut({id:'town',w:'#eadfc4',r:'#7a3b2a',h:38,rh:18,st:'timber',door:1,chim:.25,rows:2,glow:1})+ci(24,66,2,'#e0b048'),
+hall1:()=>base()+hut({id:'hall1',w:'#d9c9a8',r:'#7a3b2a',h:26,rh:14,st:'timber',door:1,chim:.3,rows:2,glow:1})+ln([40,44],[40,28],'#4a3320',1.2)+pl([[40,28],[52,32],[40,37]],'#c0392b'),
+hall2:()=>base()+hut({id:'hall2',w:'#cfc6b0',r:'#8a3b2a',h:34,rh:16,st:'stone',door:1,rows:2})+ln([40,34],[40,16],'#4a3320',1.2)+pl([[40,16],[54,20],[40,26]],'#c0392b')+ci(52,70,3,'#e0b048'),
+hall3:()=>base()+hut({id:'hall3',w:'#e6dcc4',r:'#3d5a9a',h:44,rh:20,st:'stone',door:1,rows:2,glow:1})+ln([40,20],[40,2],'#4a3320',1.2)+pl([[40,2],[56,6],[40,13]],'#c0392b')+ci(40,52,4.5,'#f2ead8')+ln([40,52],[40,49],'#333',.8)+ln([40,52],[42,52],'#333',.8),
 wall:()=>hut({id:'wall',s:.9,h:14,flat:1,mer:1,w:'#b5b0a0',st:'stone'}),
 road:()=>{let r=pl(dia(40,84,30,15),'#a89878','stroke="#7d6f55" stroke-width=".6"');for(let i=0;i<16;i++){const a=i*2.4,q=(i%5+1)/6;r+=`<ellipse cx="${(40+Math.cos(a)*q*24).toFixed(1)}" cy="${(84+Math.sin(a)*q*11).toFixed(1)}" rx="4.5" ry="2.4" fill="${i%2?'#c4b693':'#b3a487'}" stroke="#8d7f63" stroke-width=".4"/>`}return r},
 camp:()=>base('#6f5a3a',.6)+tent(26,90,'#a8452f')+tent(54,88,'#7a6a4a')+ci(40,93,2.2,'#ff8a2a')+ln([36,95],[44,94],'#4a3320',1.5)+ln([40,70],[40,40],'#4a3320',1.2)+pl([[40,40],[53,44],[40,50]],'#8a1c1c')};
